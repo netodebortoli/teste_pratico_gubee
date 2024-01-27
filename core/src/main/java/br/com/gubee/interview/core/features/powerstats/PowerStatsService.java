@@ -21,11 +21,16 @@ public class PowerStatsService {
     }
 
     public PowerStats findById(UUID id) {
-        PowerStats powerStats = this.powerStatsRepository.findById(id);
-        if (powerStats == null) {
+        PowerStatsEntity powerStatsEntity = this.powerStatsRepository.findById(id);
+        if (powerStatsEntity == null) {
             throw new EntityNotFoundException("PowerStats de ID " + id + " não existe");
         }
-        return powerStats;
+        return PowerStats.builder()
+                .strength(powerStatsEntity.getStrength())
+                .agility(powerStatsEntity.getAgility())
+                .intelligence(powerStatsEntity.getIntelligence())
+                .dexterity(powerStatsEntity.getDexterity())
+                .build();
     }
 
 }

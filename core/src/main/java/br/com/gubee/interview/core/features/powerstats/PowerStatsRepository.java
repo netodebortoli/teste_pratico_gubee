@@ -1,7 +1,6 @@
 package br.com.gubee.interview.core.features.powerstats;
 
 import br.com.gubee.interview.entity.PowerStatsEntity;
-import br.com.gubee.interview.entity.model.PowerStats;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
@@ -32,7 +31,7 @@ public class PowerStatsRepository {
             UUID.class);
     }
 
-    PowerStats findById(UUID id) {
+    PowerStatsEntity findById(UUID id) {
         Map<String, Object> params = Map.of("id", id);
         return namedParameterJdbcTemplate.queryForObject(
                 FIND_POWER_BY_ID,
@@ -41,10 +40,11 @@ public class PowerStatsRepository {
         );
     }
 
-    private static class PowerStatsMapper implements RowMapper<PowerStats> {
+    private static class PowerStatsMapper implements RowMapper<PowerStatsEntity> {
         @Override
-        public PowerStats mapRow(ResultSet rs, int rowNum) throws SQLException {
-            return PowerStats.builder()
+        public PowerStatsEntity mapRow(ResultSet rs, int rowNum) throws SQLException {
+            return PowerStatsEntity.builder()
+                    .id(UUID.fromString(rs.getString("id")))
                     .strength(rs.getInt("strength"))
                     .intelligence(rs.getInt("intelligence"))
                     .dexterity(rs.getInt("dexterity"))

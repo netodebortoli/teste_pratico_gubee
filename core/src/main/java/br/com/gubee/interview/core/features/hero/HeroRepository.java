@@ -49,10 +49,10 @@ public class HeroRepository {
         @Override
         public HeroEntity mapRow(ResultSet rs, int rowNum) throws SQLException {
             return HeroEntity.builder()
-                    .id(rs.getLong("powerStatsId"))
+                    .id(UUID.fromString(rs.getString("powerStatsId")))
                     .name(rs.getString("name"))
                     .race(Race.valueOf(rs.getString("race")))
-                    .powerStatsId(rs.getLong("powerStatsId"))
+                    .powerStatsId(UUID.fromString(rs.getString("powerStatsId")))
                     .build();
         }
     }
