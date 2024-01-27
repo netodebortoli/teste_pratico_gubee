@@ -27,6 +27,11 @@ import static org.springframework.http.ResponseEntity.status;
 @RequiredArgsConstructor
 public class ExceptionAdvice {
 
+    @ExceptionHandler(value = {EntityNotFoundException.class})
+    ResponseEntity<Object> handleEntityNotFoundException(Exception e) {
+        return status(NOT_FOUND).body(e.getMessage());
+    }
+
     @ExceptionHandler(value = {Exception.class})
     ResponseEntity<Object> handleGeneralException(Exception e) {
         log.error("Uncaught exception, message={}", e.getMessage(), e);
