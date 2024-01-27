@@ -14,8 +14,7 @@ import java.util.UUID;
 
 import static java.lang.String.format;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-import static org.springframework.http.ResponseEntity.created;
-import static org.springframework.http.ResponseEntity.ok;
+import static org.springframework.http.ResponseEntity.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -34,6 +33,12 @@ public class HeroController {
     public ResponseEntity<Hero> findById(@PathVariable @NotNull @Positive UUID id) {
         Hero hero = heroService.findById(id);
         return ok().body(hero);
+    }
+
+    @DeleteMapping(value = "/{id}", consumes = APPLICATION_JSON_VALUE)
+    public ResponseEntity<Void> delete(@PathVariable @NotNull @Positive UUID id) {
+        heroService.delete(id);
+        return noContent().build();
     }
 
 }

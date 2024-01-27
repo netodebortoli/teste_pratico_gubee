@@ -16,11 +16,13 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class HeroRepository {
 
-    private static final String FIND_HERO_QUERY_BD_ID = "SELECT * FROM hero WHERE id = :id";
-
-    private static final String CREATE_HERO_QUERY = "INSERT INTO hero" +
+    private static final String CREATE_QUERY = "INSERT INTO hero" +
             " (name, race, power_stats_id)" +
             " VALUES (:name, :race, :powerStatsId) RETURNING id";
+
+    private static final String FIND_BY_ID_QUERY = "SELECT * FROM hero WHERE id = :id";
+
+    private static final String DELETE_BY_ID_QUERY = "DELETE * FROM hero WHERE id = :id";
 
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
@@ -31,7 +33,7 @@ public class HeroRepository {
                 "powerStatsId", hero.getPowerStatsId());
 
         return namedParameterJdbcTemplate.queryForObject(
-                CREATE_HERO_QUERY,
+                CREATE_QUERY,
                 params,
                 UUID.class);
     }
@@ -39,9 +41,17 @@ public class HeroRepository {
     HeroEntity findById(UUID id) {
         final Map<String, Object> param = Map.of("id", id);
         return namedParameterJdbcTemplate.queryForObject(
-                FIND_HERO_QUERY_BD_ID,
+                FIND_BY_ID_QUERY,
                 param,
                 new HeroMapper()
+        );
+    }
+
+    void delete(UUID id) {
+        final Map<String, Object> param = Map.of("id", id);
+        namedParameterJdbcTemplate.update(
+                DELETE_BY_ID_QUERY,
+                param
         );
     }
 

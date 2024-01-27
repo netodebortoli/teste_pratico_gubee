@@ -16,27 +16,43 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class PowerStatsRepository {
 
-    private static final String FIND_POWER_BY_ID = "SELECT * FROM power_stats WHERE id = :id";
+    private static final String CREATE_QUERY = "INSERT INTO power_stats" +
+            " (strength, agility, dexterity, intelligence)" +
+            " VALUES (:strength, :agility, :dexterity, :intelligence) RETURNING id";
 
-    private static final String CREATE_POWER_STATS_QUERY = "INSERT INTO power_stats" +
-        " (strength, agility, dexterity, intelligence)" +
-        " VALUES (:strength, :agility, :dexterity, :intelligence) RETURNING id";
+    private static final String FIND_BY_ID_QUERY = "SELECT * FROM power_stats WHERE id = :id";
+
+    private static final String DELETE_BY_ID_QUERY = "DELETE * power_stats WHERE id = :id";
 
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
     UUID create(PowerStatsEntity powerStats) {
+        Map<String, Object> params = Map.of(
+                "strength", powerStats.getStrength(),
+                "agility", powerStats.getAgility(),
+                "dexterity", powerStats.getDexterity(),
+                "intelligence", powerStats.getIntelligence()
+        );
         return namedParameterJdbcTemplate.queryForObject(
-            CREATE_POWER_STATS_QUERY,
-            new BeanPropertySqlParameterSource(powerStats),
-            UUID.class);
+                CREATE_QUERY,
+                params,
+                UUID.class);
     }
 
     PowerStatsEntity findById(UUID id) {
         Map<String, Object> params = Map.of("id", id);
         return namedParameterJdbcTemplate.queryForObject(
-                FIND_POWER_BY_ID,
+                FIND_BY_ID_QUERY,
                 params,
                 new PowerStatsMapper()
+        );
+    }
+
+    void delete(UUID id) {
+        final Map<String, Object> param = Map.of("id", id);
+        namedParameterJdbcTemplate.update(
+                DELETE_BY_ID_QUERY,
+                param
         );
     }
 
