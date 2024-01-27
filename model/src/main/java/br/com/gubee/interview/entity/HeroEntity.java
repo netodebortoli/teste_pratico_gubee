@@ -1,7 +1,7 @@
-package br.com.gubee.interview.model;
+package br.com.gubee.interview.entity;
 
-import br.com.gubee.interview.model.enums.Race;
-import br.com.gubee.interview.model.request.CreateHeroRequest;
+import br.com.gubee.interview.entity.enums.Race;
+import br.com.gubee.interview.entity.model.Hero;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -16,7 +16,7 @@ import static lombok.AccessLevel.PRIVATE;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor(access = PRIVATE)
-public class Hero {
+public class HeroEntity {
 
     private UUID id;
     private String name;
@@ -26,9 +26,9 @@ public class Hero {
     private Instant updatedAt;
     private boolean enabled;
 
-    public Hero(CreateHeroRequest createHeroRequest, UUID powerStatsId) {
-        this.name = createHeroRequest.getName();
-        this.race = createHeroRequest.getRace();
+    public HeroEntity(Hero hero, UUID powerStatsId) {
+        this.name = hero.getName();
+        this.race = hero.getRace();
         this.powerStatsId = powerStatsId;
     }
 }

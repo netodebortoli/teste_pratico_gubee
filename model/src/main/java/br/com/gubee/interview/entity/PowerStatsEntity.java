@@ -1,6 +1,6 @@
-package br.com.gubee.interview.model;
+package br.com.gubee.interview.entity;
 
-import br.com.gubee.interview.model.request.CreateHeroRequest;
+import br.com.gubee.interview.entity.model.Hero;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,7 +15,7 @@ import static lombok.AccessLevel.PRIVATE;
 @NoArgsConstructor(access = PRIVATE)
 @AllArgsConstructor
 @Builder
-public class PowerStats {
+public class PowerStatsEntity {
 
     private UUID id;
     private int strength;
@@ -25,10 +25,10 @@ public class PowerStats {
     private Instant createdAt;
     private Instant updatedAt;
 
-    public PowerStats(CreateHeroRequest createHeroRequest) {
-        this.strength = createHeroRequest.getStrength();
-        this.agility = createHeroRequest.getAgility();
-        this.dexterity = createHeroRequest.getDexterity();
-        this.intelligence = createHeroRequest.getIntelligence();
+    public PowerStatsEntity(Hero hero) {
+        this.strength = hero.getStrength();
+        this.agility = hero.getAgility();
+        this.dexterity = hero.getDexterity();
+        this.intelligence = hero.getIntelligence();
     }
 }

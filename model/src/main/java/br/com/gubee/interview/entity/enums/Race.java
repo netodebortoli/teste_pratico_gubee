@@ -1,4 +1,4 @@
-package br.com.gubee.interview.model.enums;
+package br.com.gubee.interview.entity.enums;
 
 /**
  * Aqui temos algumas raças de super heróis. A API https://superheroapi.com/ pode ou não conter

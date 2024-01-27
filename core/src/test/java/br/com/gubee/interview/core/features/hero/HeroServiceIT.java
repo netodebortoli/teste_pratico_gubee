@@ -1,7 +1,7 @@
 package br.com.gubee.interview.core.features.hero;
 
-import br.com.gubee.interview.model.enums.Race;
-import br.com.gubee.interview.model.request.CreateHeroRequest;
+import br.com.gubee.interview.entity.enums.Race;
+import br.com.gubee.interview.entity.model.Hero;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -19,8 +19,8 @@ public class HeroServiceIT {
         heroService.create(createHeroRequest());
     }
 
-    private CreateHeroRequest createHeroRequest() {
-        return CreateHeroRequest.builder()
+    private Hero createHeroRequest() {
+        return Hero.builder()
             .name("Batman")
             .agility(5)
             .dexterity(8)
