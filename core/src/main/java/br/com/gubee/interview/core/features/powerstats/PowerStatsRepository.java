@@ -3,7 +3,6 @@ package br.com.gubee.interview.core.features.powerstats;
 import br.com.gubee.interview.entity.PowerStatsEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -19,6 +18,10 @@ public class PowerStatsRepository {
     private static final String CREATE_QUERY = "INSERT INTO power_stats" +
             " (strength, agility, dexterity, intelligence)" +
             " VALUES (:strength, :agility, :dexterity, :intelligence) RETURNING id";
+
+    private static final String UPDATE_QUERY = "UPDATE power_stats " +
+            " SET strength = :strength, agility = :agility, dexterity = :dexterity, intelligence = :intelligence, updated_at = :updatedAt" +
+            " WHERE id = :id";
 
     private static final String FIND_BY_ID_QUERY = "SELECT * FROM power_stats WHERE id = :id";
 
@@ -39,6 +42,22 @@ public class PowerStatsRepository {
                 UUID.class);
     }
 
+    PowerStatsEntity update(PowerStatsEntity powerStatsEntity) {
+        Map<String, Object> params = Map.of(
+                "strength", powerStatsEntity.getStrength(),
+                "agility", powerStatsEntity.getAgility(),
+                "dexterity", powerStatsEntity.getDexterity(),
+                "intelligence", powerStatsEntity.getIntelligence(),
+                "updatedAt", powerStatsEntity.getUpdatedAt(),
+                "id", powerStatsEntity.getId()
+        );
+        return namedParameterJdbcTemplate.queryForObject(
+                UPDATE_QUERY,
+                params,
+                new PowerStatsMapper()
+        );
+    }
+
     PowerStatsEntity findById(UUID id) {
         Map<String, Object> params = Map.of("id", id);
         return namedParameterJdbcTemplate.queryForObject(
@@ -49,10 +68,10 @@ public class PowerStatsRepository {
     }
 
     void delete(UUID id) {
-        final Map<String, Object> param = Map.of("id", id);
+        final Map<String, Object> params = Map.of("id", id);
         namedParameterJdbcTemplate.update(
                 DELETE_BY_ID_QUERY,
-                param
+                params
         );
     }
 
@@ -62,9 +81,9 @@ public class PowerStatsRepository {
             return PowerStatsEntity.builder()
                     .id(UUID.fromString(rs.getString("id")))
                     .strength(rs.getInt("strength"))
-                    .intelligence(rs.getInt("intelligence"))
-                    .dexterity(rs.getInt("dexterity"))
                     .agility(rs.getInt("agility"))
+                    .dexterity(rs.getInt("dexterity"))
+                    .intelligence(rs.getInt("intelligence"))
                     .build();
         }
     }

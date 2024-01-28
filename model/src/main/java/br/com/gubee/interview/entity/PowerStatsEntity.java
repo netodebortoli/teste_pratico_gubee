@@ -1,6 +1,7 @@
 package br.com.gubee.interview.entity;
 
 import br.com.gubee.interview.entity.model.Hero;
+import br.com.gubee.interview.entity.model.PowerStats;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -25,10 +26,10 @@ public class PowerStatsEntity {
     private Instant createdAt;
     private Instant updatedAt;
 
-    public PowerStatsEntity(Hero hero) {
-        this.strength = hero.getStrength();
-        this.agility = hero.getAgility();
-        this.dexterity = hero.getDexterity();
-        this.intelligence = hero.getIntelligence();
+    public PowerStatsEntity(PowerStats powerStats) {
+        this.strength = powerStats.getStrength();
+        this.agility = powerStats.getAgility();
+        this.dexterity = powerStats.getDexterity();
+        this.intelligence = powerStats.getIntelligence();
     }
 }

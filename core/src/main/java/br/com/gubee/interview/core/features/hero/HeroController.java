@@ -6,7 +6,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 import java.net.URI;
@@ -27,6 +26,13 @@ public class HeroController {
     public ResponseEntity<Void> create(@Validated @RequestBody Hero hero) {
         final UUID id = heroService.create(hero);
         return created(URI.create(format("/api/v1/heroes/%s", id))).build();
+    }
+
+    @PutMapping(value = "/{id}", consumes = APPLICATION_JSON_VALUE)
+    public ResponseEntity<Hero> update(@PathVariable @NotNull @Positive UUID id,
+           @NotNull @Validated @RequestBody Hero heroRequest) {
+        Hero hero = heroService.update(id, heroRequest);
+        return ok().body(hero);
     }
 
     @GetMapping(value = "/{id}", consumes = APPLICATION_JSON_VALUE)

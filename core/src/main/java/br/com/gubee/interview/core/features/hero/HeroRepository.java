@@ -20,6 +20,10 @@ public class HeroRepository {
             " (name, race, power_stats_id)" +
             " VALUES (:name, :race, :powerStatsId) RETURNING id";
 
+    private static final String UPDATE_QUERY = "UPDATE hero" +
+            " SET name = :name, race = :race, power_stats_id = :powerStatsId, updated_at = :updatedAt " +
+            " WHERE id = :id";
+
     private static final String FIND_BY_ID_QUERY = "SELECT * FROM hero WHERE id = :id";
 
     private static final String DELETE_BY_ID_QUERY = "DELETE * FROM hero WHERE id = :id";
@@ -31,27 +35,40 @@ public class HeroRepository {
                 "name", hero.getName(),
                 "race", hero.getRace(),
                 "powerStatsId", hero.getPowerStatsId());
-
         return namedParameterJdbcTemplate.queryForObject(
                 CREATE_QUERY,
                 params,
                 UUID.class);
     }
 
+    HeroEntity update(HeroEntity hero) {
+        final Map<String, Object> params = Map.of(
+                "name", hero.getName(),
+                "race", hero.getRace(),
+                "powerStatsId", hero.getPowerStatsId(),
+                "updatedAt", hero.getUpdatedAt(),
+                "id", hero.getId());
+        return namedParameterJdbcTemplate.queryForObject(
+                UPDATE_QUERY,
+                params,
+                new HeroMapper()
+        );
+    }
+
     HeroEntity findById(UUID id) {
-        final Map<String, Object> param = Map.of("id", id);
+        final Map<String, Object> params = Map.of("id", id);
         return namedParameterJdbcTemplate.queryForObject(
                 FIND_BY_ID_QUERY,
-                param,
+                params,
                 new HeroMapper()
         );
     }
 
     void delete(UUID id) {
-        final Map<String, Object> param = Map.of("id", id);
+        final Map<String, Object> params = Map.of("id", id);
         namedParameterJdbcTemplate.update(
                 DELETE_BY_ID_QUERY,
-                param
+                params
         );
     }
 
