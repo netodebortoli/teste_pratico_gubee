@@ -110,6 +110,9 @@
                                 <filter>@</filter>
                             </build>
                             <run>
+                                <env>
+                                    <POSTGRES_PASSWORD>gubee</POSTGRES_PASSWORD>
+                                </env>
                                 <ports>
                                     <port>gubee-interview-postgres-it.port:5432</port>
                                 </ports>

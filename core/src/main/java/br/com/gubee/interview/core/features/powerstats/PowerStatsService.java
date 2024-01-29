@@ -1,18 +1,20 @@
 package br.com.gubee.interview.core.features.powerstats;
 
-import br.com.gubee.interview.core.exception.EntityNotFoundException;
-import br.com.gubee.interview.entity.PowerStatsEntity;
-import br.com.gubee.interview.entity.model.PowerStats;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import java.time.LocalDate;
+import java.time.ZoneOffset;
+import java.util.UUID;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
-import java.time.LocalDate;
-import java.time.ZoneOffset;
-import java.util.UUID;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import br.com.gubee.interview.core.exception.EntityNotFoundException;
+import br.com.gubee.interview.entity.PowerStats;
+import br.com.gubee.interview.entity.model.PowerStatsDTO;
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
@@ -20,8 +22,8 @@ public class PowerStatsService {
 
     private final PowerStatsRepository powerStatsRepository;
 
-    private PowerStats buildPowerStats(PowerStatsEntity powerStatsEntity) {
-        return PowerStats.builder()
+    private PowerStatsDTO buildPowerStats(PowerStats powerStatsEntity) {
+        return PowerStatsDTO.builder()
                 .strength(powerStatsEntity.getStrength())
                 .agility(powerStatsEntity.getAgility())
                 .dexterity(powerStatsEntity.getDexterity())
@@ -30,27 +32,27 @@ public class PowerStatsService {
     }
 
     @Transactional(rollbackFor = {Exception.class})
-    public UUID create(@Valid @NotNull PowerStats powerStatsRequest) {
-        return powerStatsRepository.create(new PowerStatsEntity(powerStatsRequest));
+    public UUID create(@Valid @NotNull PowerStatsDTO powerStatsDTO) {
+        return powerStatsRepository.create(new PowerStats(powerStatsDTO));
     }
 
     @Transactional(rollbackFor = {Exception.class})
-    public PowerStats update(@NotNull @Positive UUID id, @Valid @NotNull PowerStats powerStatsRequest) {
-        PowerStatsEntity powerStatsEntity = powerStatsRepository.findById(id);
+    public PowerStatsDTO update(@NotNull @Positive UUID id, @Valid @NotNull PowerStatsDTO powerStatsDTO) {
+        PowerStats powerStatsEntity = powerStatsRepository.findById(id);
         if (powerStatsEntity == null) {
             throw new EntityNotFoundException("PowerStats de ID " + id + " não encontrado");
         }
         powerStatsEntity.setUpdatedAt(LocalDate.now().atStartOfDay().toInstant(ZoneOffset.UTC));
-        powerStatsEntity.setStrength(powerStatsRequest.getStrength());
-        powerStatsEntity.setAgility(powerStatsRequest.getAgility());
-        powerStatsEntity.setDexterity(powerStatsRequest.getDexterity());
-        powerStatsEntity.setIntelligence(powerStatsRequest.getIntelligence());
+        powerStatsEntity.setStrength(powerStatsDTO.getStrength());
+        powerStatsEntity.setAgility(powerStatsDTO.getAgility());
+        powerStatsEntity.setDexterity(powerStatsDTO.getDexterity());
+        powerStatsEntity.setIntelligence(powerStatsDTO.getIntelligence());
         powerStatsEntity = powerStatsRepository.update(powerStatsEntity);
         return buildPowerStats(powerStatsEntity);
     }
 
-    public PowerStats findById(@Positive @NotNull UUID id) {
-        PowerStatsEntity powerStatsEntity = this.powerStatsRepository.findById(id);
+    public PowerStatsDTO findById(@Positive @NotNull UUID id) {
+        PowerStats powerStatsEntity = this.powerStatsRepository.findById(id);
         if (powerStatsEntity == null) {
             throw new EntityNotFoundException("PowerStats de ID " + id + " não encontrado");
         }
@@ -58,7 +60,7 @@ public class PowerStatsService {
     }
 
     public void delete(@Positive @NotNull UUID id) {
-        PowerStatsEntity powerStatsEntity = powerStatsRepository.findById(id);
+        PowerStats powerStatsEntity = powerStatsRepository.findById(id);
         if (powerStatsEntity == null) {
             throw new EntityNotFoundException("PowerStats de ID: " + id + " não encontrado");
         }

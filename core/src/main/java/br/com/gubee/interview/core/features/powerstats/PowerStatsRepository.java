@@ -1,15 +1,16 @@
 package br.com.gubee.interview.core.features.powerstats;
 
-import br.com.gubee.interview.entity.PowerStatsEntity;
-import lombok.RequiredArgsConstructor;
-import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.stereotype.Repository;
-
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Map;
 import java.util.UUID;
+
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.stereotype.Repository;
+
+import br.com.gubee.interview.entity.PowerStats;
+import lombok.RequiredArgsConstructor;
 
 @Repository
 @RequiredArgsConstructor
@@ -29,7 +30,7 @@ public class PowerStatsRepository {
 
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
-    UUID create(PowerStatsEntity powerStats) {
+    UUID create(PowerStats powerStats) {
         Map<String, Object> params = Map.of(
                 "strength", powerStats.getStrength(),
                 "agility", powerStats.getAgility(),
@@ -42,14 +43,14 @@ public class PowerStatsRepository {
                 UUID.class);
     }
 
-    PowerStatsEntity update(PowerStatsEntity powerStatsEntity) {
+    PowerStats update(PowerStats powerStats) {
         Map<String, Object> params = Map.of(
-                "strength", powerStatsEntity.getStrength(),
-                "agility", powerStatsEntity.getAgility(),
-                "dexterity", powerStatsEntity.getDexterity(),
-                "intelligence", powerStatsEntity.getIntelligence(),
-                "updatedAt", powerStatsEntity.getUpdatedAt(),
-                "id", powerStatsEntity.getId()
+                "strength", powerStats.getStrength(),
+                "agility", powerStats.getAgility(),
+                "dexterity", powerStats.getDexterity(),
+                "intelligence", powerStats.getIntelligence(),
+                "updatedAt", powerStats.getUpdatedAt(),
+                "id", powerStats.getId()
         );
         return namedParameterJdbcTemplate.queryForObject(
                 UPDATE_QUERY,
@@ -58,7 +59,7 @@ public class PowerStatsRepository {
         );
     }
 
-    PowerStatsEntity findById(UUID id) {
+    PowerStats findById(UUID id) {
         Map<String, Object> params = Map.of("id", id);
         return namedParameterJdbcTemplate.queryForObject(
                 FIND_BY_ID_QUERY,
@@ -75,10 +76,10 @@ public class PowerStatsRepository {
         );
     }
 
-    private static class PowerStatsMapper implements RowMapper<PowerStatsEntity> {
+    private static class PowerStatsMapper implements RowMapper<PowerStats> {
         @Override
-        public PowerStatsEntity mapRow(ResultSet rs, int rowNum) throws SQLException {
-            return PowerStatsEntity.builder()
+        public PowerStats mapRow(ResultSet rs, int rowNum) throws SQLException {
+            return PowerStats.builder()
                     .id(UUID.fromString(rs.getString("id")))
                     .strength(rs.getInt("strength"))
                     .agility(rs.getInt("agility"))

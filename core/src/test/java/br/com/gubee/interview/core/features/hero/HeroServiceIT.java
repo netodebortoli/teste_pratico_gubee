@@ -1,11 +1,12 @@
 package br.com.gubee.interview.core.features.hero;
 
-import br.com.gubee.interview.entity.enums.Race;
-import br.com.gubee.interview.entity.model.Hero;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
+
+import br.com.gubee.interview.entity.enums.Race;
+import br.com.gubee.interview.entity.model.HeroDTO;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("it")
@@ -19,8 +20,8 @@ public class HeroServiceIT {
         heroService.create(createHeroRequest());
     }
 
-    private Hero createHeroRequest() {
-        return Hero.builder()
+    private HeroDTO createHeroRequest() {
+        return HeroDTO.builder()
             .name("Batman")
             .agility(5)
             .dexterity(8)

@@ -1,22 +1,21 @@
 package br.com.gubee.interview.entity;
 
-import br.com.gubee.interview.entity.model.Hero;
-import br.com.gubee.interview.entity.model.PowerStats;
+import static lombok.AccessLevel.PRIVATE;
+
+import java.time.Instant;
+import java.util.UUID;
+
+import br.com.gubee.interview.entity.model.PowerStatsDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.Instant;
-import java.util.UUID;
-
-import static lombok.AccessLevel.PRIVATE;
-
 @Data
 @NoArgsConstructor(access = PRIVATE)
 @AllArgsConstructor
 @Builder
-public class PowerStatsEntity {
+public class PowerStats {
 
     private UUID id;
     private int strength;
@@ -26,7 +25,7 @@ public class PowerStatsEntity {
     private Instant createdAt;
     private Instant updatedAt;
 
-    public PowerStatsEntity(PowerStats powerStats) {
+    public PowerStats(PowerStatsDTO powerStats) {
         this.strength = powerStats.getStrength();
         this.agility = powerStats.getAgility();
         this.dexterity = powerStats.getDexterity();
