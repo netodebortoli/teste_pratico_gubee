@@ -1,0 +1,10 @@
+version: '3.8'
+
+services:
+  postgres:
+    build: ./core/src/main/resources/db/schema
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_PASSWORD: gubee
+
