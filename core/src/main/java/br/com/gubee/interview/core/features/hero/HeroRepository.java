@@ -29,6 +29,8 @@ public class HeroRepository {
 
     private static final String FIND_BY_ID_QUERY = "SELECT * FROM hero WHERE id = :id";
 
+    private static final String FIND_BY_NAME_IF_EXISTS_QUERY = "SELECT * FROM hero WHERE lower(name) LIKE lower(:name) LIMIT 1";
+
     private static final String DELETE_BY_ID_QUERY = "DELETE FROM hero WHERE id = :id";
 
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
@@ -71,6 +73,20 @@ public class HeroRepository {
                             return null;
                         }
                     }
+                }
+        );
+    }
+
+    boolean findByNameIfExists(String name) {
+        final Map<String, Object> params = Map.of("name", name);
+        return namedParameterJdbcTemplate.query(
+                FIND_BY_NAME_IF_EXISTS_QUERY,
+                params,
+                (rs) -> {
+                    if (rs.next()) 
+                        return true;
+                    else 
+                        return false;
                 }
         );
     }

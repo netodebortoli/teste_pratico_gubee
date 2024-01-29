@@ -48,6 +48,7 @@ public class HeroService {
     @Transactional(rollbackFor = { Exception.class })
     public UUID create(@Valid @NotNull HeroDTO heroRequest) {
         UUID powerStatsId = powerStatsService.create(buildPowerStatsFromHero(heroRequest));
+        validateHero(heroRequest);
         return heroRepository.create(new Hero(heroRequest, powerStatsId));
     }
 
@@ -84,6 +85,12 @@ public class HeroService {
         }
         heroRepository.delete(id);
         powerStatsService.delete(heroEntity.getPowerStatsId());
+    }
+
+    private void validateHero(HeroDTO heroRequest) {
+        if (heroRepository.findByNameIfExists(heroRequest.getName())) {
+            throw new IllegalArgumentException("Herói de nome: " + heroRequest.getName() + " já existe");
+        }
     }
 
 }
