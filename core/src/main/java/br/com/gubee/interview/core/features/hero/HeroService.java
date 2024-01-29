@@ -47,8 +47,7 @@ public class HeroService {
 
     @Transactional(rollbackFor = { Exception.class })
     public UUID create(@Valid @NotNull HeroDTO heroRequest) {
-        UUID powerStatsId = powerStatsService.create(
-                buildPowerStatsFromHero(heroRequest));
+        UUID powerStatsId = powerStatsService.create(buildPowerStatsFromHero(heroRequest));
         return heroRepository.create(new Hero(heroRequest, powerStatsId));
     }
 
@@ -83,8 +82,8 @@ public class HeroService {
         if (heroEntity == null) {
             throw new EntityNotFoundException("Herói de ID: " + id + " não encontrado");
         }
-        powerStatsService.delete(heroEntity.getPowerStatsId());
         heroRepository.delete(id);
+        powerStatsService.delete(heroEntity.getPowerStatsId());
     }
 
 }

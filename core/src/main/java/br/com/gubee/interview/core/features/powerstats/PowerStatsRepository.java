@@ -5,6 +5,8 @@ import java.sql.SQLException;
 import java.util.Map;
 import java.util.UUID;
 
+import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -21,12 +23,13 @@ public class PowerStatsRepository {
             " VALUES (:strength, :agility, :dexterity, :intelligence) RETURNING id";
 
     private static final String UPDATE_QUERY = "UPDATE power_stats " +
-            " SET strength = :strength, agility = :agility, dexterity = :dexterity, intelligence = :intelligence, updated_at = :updatedAt" +
+            " SET strength = :strength, agility = :agility, dexterity = :dexterity, intelligence = :intelligence, updated_at = :updatedAt"
+            +
             " WHERE id = :id";
 
     private static final String FIND_BY_ID_QUERY = "SELECT * FROM power_stats WHERE id = :id";
 
-    private static final String DELETE_BY_ID_QUERY = "DELETE * power_stats WHERE id = :id";
+    private static final String DELETE_BY_ID_QUERY = "DELETE FROM power_stats WHERE id = :id";
 
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
@@ -35,8 +38,7 @@ public class PowerStatsRepository {
                 "strength", powerStats.getStrength(),
                 "agility", powerStats.getAgility(),
                 "dexterity", powerStats.getDexterity(),
-                "intelligence", powerStats.getIntelligence()
-        );
+                "intelligence", powerStats.getIntelligence());
         return namedParameterJdbcTemplate.queryForObject(
                 CREATE_QUERY,
                 params,
@@ -50,21 +52,28 @@ public class PowerStatsRepository {
                 "dexterity", powerStats.getDexterity(),
                 "intelligence", powerStats.getIntelligence(),
                 "updatedAt", powerStats.getUpdatedAt(),
-                "id", powerStats.getId()
-        );
+                "id", powerStats.getId());
         return namedParameterJdbcTemplate.queryForObject(
                 UPDATE_QUERY,
                 params,
-                new PowerStatsMapper()
-        );
+                new PowerStatsMapper());
     }
 
     PowerStats findById(UUID id) {
         Map<String, Object> params = Map.of("id", id);
-        return namedParameterJdbcTemplate.queryForObject(
+        return namedParameterJdbcTemplate.query(
                 FIND_BY_ID_QUERY,
                 params,
-                new PowerStatsMapper()
+                new ResultSetExtractor<PowerStats>() {
+                    @Override
+                    public PowerStats extractData(ResultSet rs) throws SQLException, DataAccessException {
+                        if (rs.next()) {
+                            return new PowerStatsMapper().mapRow(rs, 1);
+                        } else {
+                            return null;
+                        }
+                    }
+                }
         );
     }
 
@@ -72,8 +81,7 @@ public class PowerStatsRepository {
         final Map<String, Object> params = Map.of("id", id);
         namedParameterJdbcTemplate.update(
                 DELETE_BY_ID_QUERY,
-                params
-        );
+                params);
     }
 
     private static class PowerStatsMapper implements RowMapper<PowerStats> {
