@@ -1,7 +1,6 @@
 package br.com.gubee.interview.core.features.powerstats;
 
-import java.time.LocalDate;
-import java.time.ZoneOffset;
+import java.time.Instant;
 import java.util.UUID;
 
 import javax.validation.Valid;
@@ -42,7 +41,7 @@ public class PowerStatsService {
         if (powerStatsEntity == null) {
             throw new EntityNotFoundException("PowerStats de ID " + id + " não encontrado");
         }
-        powerStatsEntity.setUpdatedAt(LocalDate.now().atStartOfDay().toInstant(ZoneOffset.UTC));
+        powerStatsEntity.setUpdatedAt(Instant.now());
         powerStatsEntity.setStrength(powerStatsDTO.getStrength());
         powerStatsEntity.setAgility(powerStatsDTO.getAgility());
         powerStatsEntity.setDexterity(powerStatsDTO.getDexterity());

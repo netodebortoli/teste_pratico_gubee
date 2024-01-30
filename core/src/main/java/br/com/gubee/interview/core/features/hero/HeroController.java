@@ -7,6 +7,7 @@ import static org.springframework.http.ResponseEntity.noContent;
 import static org.springframework.http.ResponseEntity.ok;
 
 import java.net.URI;
+import java.util.List;
 import java.util.UUID;
 
 import javax.validation.constraints.NotNull;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.gubee.interview.entity.model.HeroDTO;
@@ -33,6 +35,12 @@ public class HeroController {
 
     private final HeroService heroService;
 
+    @GetMapping
+    public ResponseEntity<List<HeroDTO>> findAll(@RequestParam(required = false, name = "filter") String filter) {
+        List<HeroDTO> heroes = heroService.findAll(filter);
+        return ok().body(heroes);
+    }
+
     @PostMapping(consumes = APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> create(@Validated @RequestBody HeroDTO hero) {
         final UUID id = heroService.create(hero);
@@ -41,7 +49,7 @@ public class HeroController {
 
     @PutMapping(value = "/{id}", consumes = APPLICATION_JSON_VALUE)
     public ResponseEntity<HeroDTO> update(@PathVariable @NotNull @Positive UUID id,
-           @NotNull @Validated @RequestBody HeroDTO heroRequest) {
+            @NotNull @Validated @RequestBody HeroDTO heroRequest) {
         HeroDTO hero = heroService.update(id, heroRequest);
         return ok().body(hero);
     }

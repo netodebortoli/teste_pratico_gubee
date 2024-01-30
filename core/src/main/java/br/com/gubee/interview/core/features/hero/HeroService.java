@@ -1,7 +1,7 @@
 package br.com.gubee.interview.core.features.hero;
 
-import java.time.LocalDate;
-import java.time.ZoneOffset;
+import java.time.Instant;
+import java.util.List;
 import java.util.UUID;
 
 import javax.validation.Valid;
@@ -45,6 +45,10 @@ public class HeroService {
                 .build();
     }
 
+    public List<HeroDTO> findAll(String filter) {
+        return heroRepository.findAll(filter);
+    }
+
     @Transactional(rollbackFor = { Exception.class })
     public UUID create(@Valid @NotNull HeroDTO heroRequest) {
         UUID powerStatsId = powerStatsService.create(buildPowerStatsFromHero(heroRequest));
@@ -60,7 +64,7 @@ public class HeroService {
         }
         heroEntity.setRace(heroRequest.getRace());
         heroEntity.setName(heroRequest.getName());
-        heroEntity.setUpdatedAt(LocalDate.now().atStartOfDay().toInstant(ZoneOffset.UTC));
+        heroEntity.setUpdatedAt(Instant.now());
         heroRepository.update(heroEntity);
         PowerStatsDTO powerStats = powerStatsService.update(
                 heroEntity.getPowerStatsId(),
