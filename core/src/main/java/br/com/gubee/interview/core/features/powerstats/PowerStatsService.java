@@ -5,10 +5,10 @@ import java.util.UUID;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Positive;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.annotation.Validated;
 
 import br.com.gubee.interview.core.exception.EntityNotFoundException;
 import br.com.gubee.interview.entity.PowerStats;
@@ -17,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
+@Validated
 public class PowerStatsService {
 
     private final PowerStatsRepository powerStatsRepository;
@@ -36,7 +37,7 @@ public class PowerStatsService {
     }
 
     @Transactional(rollbackFor = {Exception.class})
-    public PowerStatsDTO update(@NotNull @Positive UUID id, @Valid @NotNull PowerStatsDTO powerStatsDTO) {
+    public PowerStatsDTO update(@NotNull UUID id, @Valid @NotNull PowerStatsDTO powerStatsDTO) {
         PowerStats powerStatsEntity = powerStatsRepository.findById(id);
         if (powerStatsEntity == null) {
             throw new EntityNotFoundException("PowerStats de ID " + id + " não encontrado");
@@ -50,7 +51,7 @@ public class PowerStatsService {
         return buildPowerStats(powerStatsEntity);
     }
 
-    public PowerStatsDTO findById(@Positive @NotNull UUID id) {
+    public PowerStatsDTO findById(@NotNull UUID id) {
         PowerStats powerStatsEntity = this.powerStatsRepository.findById(id);
         if (powerStatsEntity == null) {
             throw new EntityNotFoundException("PowerStats de ID " + id + " não encontrado");
@@ -58,7 +59,7 @@ public class PowerStatsService {
         return buildPowerStats(powerStatsEntity);
     }
 
-    public void delete(@Positive @NotNull UUID id) {
+    public void delete(@NotNull UUID id) {
         PowerStats powerStatsEntity = powerStatsRepository.findById(id);
         if (powerStatsEntity == null) {
             throw new EntityNotFoundException("PowerStats de ID: " + id + " não encontrado");

@@ -10,8 +10,8 @@ import java.net.URI;
 import java.util.List;
 import java.util.UUID;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Positive;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -31,6 +31,7 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(value = "/api/v1/heroes", produces = APPLICATION_JSON_VALUE)
+@Validated
 public class HeroController {
 
     private final HeroService heroService;
@@ -42,26 +43,26 @@ public class HeroController {
     }
 
     @PostMapping(consumes = APPLICATION_JSON_VALUE)
-    public ResponseEntity<Void> create(@Validated @RequestBody HeroDTO hero) {
+    public ResponseEntity<Void> create(@RequestBody @Valid HeroDTO hero) {
         final UUID id = heroService.create(hero);
         return created(URI.create(format("/api/v1/heroes/%s", id))).build();
     }
 
     @PutMapping(value = "/{id}", consumes = APPLICATION_JSON_VALUE)
-    public ResponseEntity<HeroDTO> update(@PathVariable @NotNull @Positive UUID id,
-            @NotNull @Validated @RequestBody HeroDTO heroRequest) {
+    public ResponseEntity<HeroDTO> update(@PathVariable @NotNull UUID id,
+            @RequestBody @Valid HeroDTO heroRequest) {
         HeroDTO hero = heroService.update(id, heroRequest);
         return ok().body(hero);
     }
 
     @GetMapping(value = "/{id}", consumes = APPLICATION_JSON_VALUE)
-    public ResponseEntity<HeroDTO> findById(@PathVariable @NotNull @Positive UUID id) {
+    public ResponseEntity<HeroDTO> findById(@PathVariable @NotNull UUID id) {
         HeroDTO hero = heroService.findById(id);
         return ok().body(hero);
     }
 
     @DeleteMapping(value = "/{id}", consumes = APPLICATION_JSON_VALUE)
-    public ResponseEntity<Void> delete(@PathVariable @NotNull @Positive UUID id) {
+    public ResponseEntity<Void> delete(@PathVariable @NotNull UUID id) {
         heroService.delete(id);
         return noContent().build();
     }

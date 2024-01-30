@@ -6,11 +6,11 @@ import java.util.UUID;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Positive;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
+import org.springframework.validation.annotation.Validated;
 
 import br.com.gubee.interview.core.exception.EntityNotFoundException;
 import br.com.gubee.interview.core.features.powerstats.PowerStatsService;
@@ -21,6 +21,7 @@ import lombok.AllArgsConstructor;
 
 @Service
 @AllArgsConstructor
+@Validated
 public class HeroService {
 
     private final HeroRepository heroRepository;
@@ -61,7 +62,7 @@ public class HeroService {
     }
 
     @Transactional(rollbackFor = { Exception.class })
-    public HeroDTO update(@NotNull @Positive UUID id, @Valid @NotNull HeroDTO heroRequest) {
+    public HeroDTO update(@NotNull UUID id, @Valid @NotNull HeroDTO heroRequest) {
         Hero heroEntity = heroRepository.findById(id);
         if (heroEntity == null) {
             throw new EntityNotFoundException("Herói de ID: " + id + " não encontrado");
@@ -76,7 +77,7 @@ public class HeroService {
         return buildHero(heroEntity, powerStats);
     }
 
-    public HeroDTO findById(@NotNull @Positive UUID id) {
+    public HeroDTO findById(@NotNull UUID id) {
         Hero heroEntity = heroRepository.findById(id);
         if (heroEntity == null) {
             throw new EntityNotFoundException("Herói de ID: " + id + " não encontrado");
@@ -86,7 +87,7 @@ public class HeroService {
     }
 
     @Transactional(rollbackFor = { Exception.class })
-    public void delete(@NotNull @Positive UUID id) {
+    public void delete(@NotNull UUID id) {
         Hero heroEntity = heroRepository.findById(id);
         if (heroEntity == null) {
             throw new EntityNotFoundException("Herói de ID: " + id + " não encontrado");
