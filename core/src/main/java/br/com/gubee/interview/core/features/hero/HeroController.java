@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.com.gubee.interview.entity.model.CompareHero;
 import br.com.gubee.interview.entity.model.HeroDTO;
 import lombok.RequiredArgsConstructor;
 
@@ -65,6 +66,15 @@ public class HeroController {
     public ResponseEntity<Void> delete(@PathVariable @NotNull UUID id) {
         heroService.delete(id);
         return noContent().build();
+    }
+
+    @GetMapping(value = "/compare")
+    public ResponseEntity<CompareHero> compareHero(
+            @RequestParam(required = true, name = "idHeroOne") @NotNull UUID idHeroOne,
+            @RequestParam(required = true, name = "idHeroTwo") @NotNull UUID idHeroTwo) {
+        CompareHero compare = new CompareHero(idHeroOne, idHeroTwo);
+                
+        return ok().body(compare);
     }
 
 }
