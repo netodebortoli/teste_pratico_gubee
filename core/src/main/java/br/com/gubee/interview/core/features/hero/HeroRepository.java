@@ -11,7 +11,6 @@ import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
-import org.springframework.util.StringUtils;
 
 import br.com.gubee.interview.entity.Hero;
 import br.com.gubee.interview.entity.enums.Race;
@@ -42,19 +41,16 @@ public class HeroRepository {
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
     List<HeroDTO> findAll(String filter) {
-        if (filter != null && StringUtils.hasText(filter)) {
-            return findAllWithFilterName(filter);
-        }
         return namedParameterJdbcTemplate.query(
                 FIND_ALL_QUERY,
                 new HeroDTOMapper());
     }
 
-    private List<HeroDTO> findAllWithFilterName(String filteredName) {
+    public List<HeroDTO> findAllWithFilterName(String filteredName) {
+        final Map<String, Object> params = Map.of("name", filteredName);
         StringBuilder sqlBuilder = new StringBuilder();
         sqlBuilder.append(FIND_ALL_QUERY);
         sqlBuilder.append(" WHERE lower(h.name) LIKE lower(concat('%',:name,'%'))");
-        final Map<String, Object> params = Map.of("name", filteredName);
         return namedParameterJdbcTemplate.query(
                 sqlBuilder.toString(),
                 params,

@@ -10,6 +10,7 @@ import javax.validation.constraints.Positive;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import br.com.gubee.interview.core.exception.EntityNotFoundException;
 import br.com.gubee.interview.core.features.powerstats.PowerStatsService;
@@ -46,7 +47,10 @@ public class HeroService {
     }
 
     public List<HeroDTO> findAll(String filter) {
-        return heroRepository.findAll(filter);
+        if (filter != null && StringUtils.hasText(filter)) {
+            return heroRepository.findAllWithFilterName(filter);
+        }
+        return heroRepository.findAll(filter);  
     }
 
     @Transactional(rollbackFor = { Exception.class })
