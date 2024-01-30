@@ -1,6 +1,5 @@
 package br.com.gubee.interview.core.features.powerstats;
 
-import java.time.Instant;
 import java.util.UUID;
 
 import javax.validation.Valid;
@@ -11,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
 import br.com.gubee.interview.core.exception.EntityNotFoundException;
+import br.com.gubee.interview.core.exception.NegocioException;
 import br.com.gubee.interview.entity.PowerStats;
 import br.com.gubee.interview.entity.model.PowerStatsDTO;
 import lombok.RequiredArgsConstructor;
@@ -31,40 +31,38 @@ public class PowerStatsService {
                 .build();
     }
 
-    @Transactional(rollbackFor = {Exception.class})
+    @Transactional(rollbackFor = { Exception.class })
     public UUID create(@Valid @NotNull PowerStatsDTO powerStatsDTO) {
         return powerStatsRepository.create(new PowerStats(powerStatsDTO));
     }
 
-    @Transactional(rollbackFor = {Exception.class})
+    @Transactional(rollbackFor = { Exception.class })
     public PowerStatsDTO update(@NotNull UUID id, @Valid @NotNull PowerStatsDTO powerStatsDTO) {
         PowerStats powerStatsEntity = powerStatsRepository.findById(id);
-        if (powerStatsEntity == null) {
+        if (powerStatsEntity == null)
             throw new EntityNotFoundException("PowerStats de ID " + id + " não encontrado");
-        }
-        powerStatsEntity.setUpdatedAt(Instant.now());
         powerStatsEntity.setStrength(powerStatsDTO.getStrength());
         powerStatsEntity.setAgility(powerStatsDTO.getAgility());
         powerStatsEntity.setDexterity(powerStatsDTO.getDexterity());
         powerStatsEntity.setIntelligence(powerStatsDTO.getIntelligence());
-        powerStatsEntity = powerStatsRepository.update(powerStatsEntity);
+        if (!powerStatsRepository.update(powerStatsEntity))
+            throw new NegocioException("Erro ao atualizar PowerStats de ID " + id);
         return buildPowerStats(powerStatsEntity);
     }
 
     public PowerStatsDTO findById(@NotNull UUID id) {
         PowerStats powerStatsEntity = this.powerStatsRepository.findById(id);
-        if (powerStatsEntity == null) {
+        if (powerStatsEntity == null)
             throw new EntityNotFoundException("PowerStats de ID " + id + " não encontrado");
-        }
         return buildPowerStats(powerStatsEntity);
     }
 
     public void delete(@NotNull UUID id) {
         PowerStats powerStatsEntity = powerStatsRepository.findById(id);
-        if (powerStatsEntity == null) {
+        if (powerStatsEntity == null)
             throw new EntityNotFoundException("PowerStats de ID: " + id + " não encontrado");
-        }
-        powerStatsRepository.delete(id);
+        if (!powerStatsRepository.delete(id))
+            throw new NegocioException("Erro ao deletar PowerStats de ID: " + id);
     }
 
 }

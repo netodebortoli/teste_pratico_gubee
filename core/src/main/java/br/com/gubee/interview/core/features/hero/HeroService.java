@@ -1,6 +1,5 @@
 package br.com.gubee.interview.core.features.hero;
 
-import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
@@ -13,6 +12,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
 
 import br.com.gubee.interview.core.exception.EntityNotFoundException;
+import br.com.gubee.interview.core.exception.NegocioException;
 import br.com.gubee.interview.core.features.powerstats.PowerStatsService;
 import br.com.gubee.interview.entity.Hero;
 import br.com.gubee.interview.entity.model.HeroDTO;
@@ -48,29 +48,29 @@ public class HeroService {
     }
 
     public List<HeroDTO> findAll(String filter) {
-        if (filter != null && StringUtils.hasText(filter)) {
+        if (filter != null && StringUtils.hasText(filter))
             return heroRepository.findAllWithFilterName(filter);
-        }
-        return heroRepository.findAll(filter);  
+        return heroRepository.findAll(filter);
     }
 
     @Transactional(rollbackFor = { Exception.class })
     public UUID create(@Valid @NotNull HeroDTO heroRequest) {
         UUID powerStatsId = powerStatsService.create(buildPowerStatsFromHero(heroRequest));
-        validateHero(heroRequest);
-        return heroRepository.create(new Hero(heroRequest, powerStatsId));
+        Hero newHero = new Hero(heroRequest, powerStatsId);
+        validateHero(newHero);
+        return heroRepository.create(newHero);
     }
 
     @Transactional(rollbackFor = { Exception.class })
     public HeroDTO update(@NotNull UUID id, @Valid @NotNull HeroDTO heroRequest) {
         Hero heroEntity = heroRepository.findById(id);
-        if (heroEntity == null) {
+        if (heroEntity == null)
             throw new EntityNotFoundException("Herói de ID: " + id + " não encontrado");
-        }
-        heroEntity.setRace(heroRequest.getRace());
         heroEntity.setName(heroRequest.getName());
-        heroEntity.setUpdatedAt(Instant.now());
-        heroRepository.update(heroEntity);
+        heroEntity.setRace(heroRequest.getRace());
+        validateHero(heroEntity);
+        if (!heroRepository.update(heroEntity))
+            throw new NegocioException("Erro ao atualizar Herói de ID: " + id);
         PowerStatsDTO powerStats = powerStatsService.update(
                 heroEntity.getPowerStatsId(),
                 buildPowerStatsFromHero(heroRequest));
@@ -79,9 +79,8 @@ public class HeroService {
 
     public HeroDTO findById(@NotNull UUID id) {
         Hero heroEntity = heroRepository.findById(id);
-        if (heroEntity == null) {
+        if (heroEntity == null)
             throw new EntityNotFoundException("Herói de ID: " + id + " não encontrado");
-        }
         PowerStatsDTO powerStats = powerStatsService.findById(heroEntity.getPowerStatsId());
         return buildHero(heroEntity, powerStats);
     }
@@ -89,16 +88,24 @@ public class HeroService {
     @Transactional(rollbackFor = { Exception.class })
     public void delete(@NotNull UUID id) {
         Hero heroEntity = heroRepository.findById(id);
-        if (heroEntity == null) {
+        if (heroEntity == null)
             throw new EntityNotFoundException("Herói de ID: " + id + " não encontrado");
-        }
-        heroRepository.delete(id);
+        if (!heroRepository.delete(id))
+            throw new NegocioException("Erro ao deletar Herói de ID: " + id);
         powerStatsService.delete(heroEntity.getPowerStatsId());
     }
 
-    private void validateHero(HeroDTO heroRequest) {
-        if (heroRepository.findByNameIfExists(heroRequest.getName())) {
-            throw new IllegalArgumentException("Herói de nome: " + heroRequest.getName() + " já existe");
+    private void validateHero(Hero hero) {
+        Hero heroFromDB = this.heroRepository.findByName(hero.getName());
+        if (hero.getId() == null && heroFromDB != null) {
+            throw new NegocioException(
+                    String.format("Já existe um herói com o nome %s",
+                            heroFromDB.getName().toUpperCase()));
+        }
+        if (heroFromDB != null && !hero.getId().equals(heroFromDB.getId())) {
+            throw new NegocioException(
+                    String.format("Já existe um herói com o nome %s",
+                            heroFromDB.getName().toUpperCase()));
         }
     }
 
