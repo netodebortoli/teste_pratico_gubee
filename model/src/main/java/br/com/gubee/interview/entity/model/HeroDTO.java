@@ -22,29 +22,29 @@ import lombok.NoArgsConstructor;
 public class HeroDTO {
 
     @NotBlank(message = "message.name.mandatory")
-    @Length(min = 1, max = 255, message = "message.name.length")
+    @Length(min = 1, max = 255, message = "message.name.length.min.1.max.255")
     private String name;
 
     @NotNull(message = "message.race.mandatory")
     private Race race;
 
-    @Min(value = 0, message = "message.powerstats.strength.min")
-    @Max(value = 10, message = "message.powerstats.strength.max")
+    @Min(value = 0, message = "message.powerstats.strength.min.0")
+    @Max(value = 10, message = "message.powerstats.strength.max.10")
     @NotNull(message = "message.powerstats.strength.mandatory")
     private Integer strength;
 
-    @Min(value = 0, message = "message.powerstats.agility.min")
-    @Max(value = 10, message = "message.powerstats.agility.max")
+    @Min(value = 0, message = "message.powerstats.agility.min.0")
+    @Max(value = 10, message = "message.powerstats.agility.max.10")
     @NotNull(message = "message.powerstats.agility.mandatory")
     private Integer agility;
 
-    @Min(value = 0, message = "message.powerstats.dexterity.min")
-    @Max(value = 10, message = "message.powerstats.dexterity.max")
+    @Min(value = 0, message = "message.powerstats.dexterity.min.0")
+    @Max(value = 10, message = "message.powerstats.dexterity.max.10")
     @NotNull(message = "message.powerstats.dexterity.mandatory")
     private Integer dexterity;
 
-    @Min(value = 0, message = "message.powerstats.intelligence.min")
-    @Max(value = 10, message = "message.powerstats.intelligence.max")
+    @Min(value = 0, message = "message.powerstats.intelligence.min.0")
+    @Max(value = 10, message = "message.powerstats.intelligence.max.10")
     @NotNull(message = "message.powerstats.intelligence.mandatory")
     private Integer intelligence;
 }
