@@ -8,12 +8,10 @@ import java.util.UUID;
 
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ResultSetExtractor;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import br.com.gubee.interview.entity.Hero;
-import br.com.gubee.interview.entity.enums.Race;
 import br.com.gubee.interview.entity.model.HeroDTO;
 import lombok.RequiredArgsConstructor;
 
@@ -43,7 +41,7 @@ public class HeroRepository {
     List<HeroDTO> findAll(String filter) {
         return namedParameterJdbcTemplate.query(
                 FIND_ALL_QUERY,
-                new HeroDTOMapper());
+                new MapperHero.MapperToDTO());
     }
 
     public List<HeroDTO> findAllWithFilterName(String filteredName) {
@@ -54,7 +52,7 @@ public class HeroRepository {
         return namedParameterJdbcTemplate.query(
                 sqlBuilder.toString(),
                 params,
-                new HeroDTOMapper());
+                new MapperHero.MapperToDTO());
     }
 
     UUID create(Hero hero) {
@@ -78,7 +76,7 @@ public class HeroRepository {
         return namedParameterJdbcTemplate.queryForObject(
                 UPDATE_QUERY,
                 params,
-                new HeroMapper());
+                new MapperHero.MapperToEntity());
     }
 
     Hero findById(UUID id) {
@@ -90,7 +88,7 @@ public class HeroRepository {
                     @Override
                     public Hero extractData(ResultSet rs) throws SQLException, DataAccessException {
                         if (rs.next()) {
-                            return new HeroMapper().mapRow(rs, 1);
+                            return new MapperHero.MapperToEntity().mapRow(rs, 1);
                         } else {
                             return null;
                         }
@@ -116,32 +114,6 @@ public class HeroRepository {
         namedParameterJdbcTemplate.update(
                 DELETE_BY_ID_QUERY,
                 params);
-    }
-
-    private static class HeroMapper implements RowMapper<Hero> {
-        @Override
-        public Hero mapRow(ResultSet rs, int rowNum) throws SQLException {
-            return Hero.builder()
-                    .id(UUID.fromString(rs.getString("id")))
-                    .name(rs.getString("name"))
-                    .race(Race.valueOf(rs.getString("race")))
-                    .powerStatsId(UUID.fromString(rs.getString("power_stats_id")))
-                    .build();
-        }
-    }
-
-    private static class HeroDTOMapper implements RowMapper<HeroDTO> {
-        @Override
-        public HeroDTO mapRow(ResultSet rs, int rowNum) throws SQLException {
-            return HeroDTO.builder()
-                    .name(rs.getString("name"))
-                    .race(Race.valueOf(rs.getString("race")))
-                    .strength(rs.getInt("strength"))
-                    .agility(rs.getInt("agility"))
-                    .dexterity(rs.getInt("dexterity"))
-                    .intelligence(rs.getInt("intelligence"))
-                    .build();
-        }
     }
 
 }

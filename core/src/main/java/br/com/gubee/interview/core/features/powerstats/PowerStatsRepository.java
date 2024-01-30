@@ -7,7 +7,6 @@ import java.util.UUID;
 
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ResultSetExtractor;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -56,7 +55,7 @@ public class PowerStatsRepository {
         return namedParameterJdbcTemplate.queryForObject(
                 UPDATE_QUERY,
                 params,
-                new PowerStatsMapper());
+                new MapperPowerStats.MapperToEntity());
     }
 
     PowerStats findById(UUID id) {
@@ -68,13 +67,12 @@ public class PowerStatsRepository {
                     @Override
                     public PowerStats extractData(ResultSet rs) throws SQLException, DataAccessException {
                         if (rs.next()) {
-                            return new PowerStatsMapper().mapRow(rs, 1);
+                            return new MapperPowerStats.MapperToEntity().mapRow(rs, 1);
                         } else {
                             return null;
                         }
                     }
-                }
-        );
+                });
     }
 
     void delete(UUID id) {
@@ -84,16 +82,4 @@ public class PowerStatsRepository {
                 params);
     }
 
-    private static class PowerStatsMapper implements RowMapper<PowerStats> {
-        @Override
-        public PowerStats mapRow(ResultSet rs, int rowNum) throws SQLException {
-            return PowerStats.builder()
-                    .id(UUID.fromString(rs.getString("id")))
-                    .strength(rs.getInt("strength"))
-                    .agility(rs.getInt("agility"))
-                    .dexterity(rs.getInt("dexterity"))
-                    .intelligence(rs.getInt("intelligence"))
-                    .build();
-        }
-    }
 }

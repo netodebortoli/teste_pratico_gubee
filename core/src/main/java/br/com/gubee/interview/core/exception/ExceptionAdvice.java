@@ -1,8 +1,18 @@
 package br.com.gubee.interview.core.exception;
 
-import com.fasterxml.jackson.databind.exc.InvalidFormatException;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import static org.springframework.http.HttpStatus.BAD_GATEWAY;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.FORBIDDEN;
+import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
+import static org.springframework.http.HttpStatus.METHOD_NOT_ALLOWED;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static org.springframework.http.HttpStatus.UNAUTHORIZED;
+import static org.springframework.http.HttpStatus.UNSUPPORTED_MEDIA_TYPE;
+import static org.springframework.http.ResponseEntity.status;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -16,11 +26,10 @@ import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
-import java.util.List;
-import java.util.stream.Collectors;
+import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 
-import static org.springframework.http.HttpStatus.*;
-import static org.springframework.http.ResponseEntity.status;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @RestControllerAdvice
@@ -81,7 +90,7 @@ public class ExceptionAdvice {
         }
         if (e.getStatusCode().is4xxClientError()) {
             final String errorMessage = e.getResponseBodyAsString();
-            if (!StringUtils.isEmpty(errorMessage)) {
+            if (!StringUtils.hasText(errorMessage)) {
                 log.warn(errorMessage);
             }
         }
