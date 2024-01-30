@@ -41,6 +41,11 @@ public class ExceptionAdvice {
         return status(NOT_FOUND).body(e.getMessage());
     }
 
+    @ExceptionHandler(value = {NegocioException.class})
+    ResponseEntity<Object> handleNegocioException(Exception e) {
+        return status(BAD_REQUEST).body(e.getMessage());
+    }
+
     @ExceptionHandler(value = {Exception.class})
     ResponseEntity<Object> handleGeneralException(Exception e) {
         log.error("Uncaught exception, message={}", e.getMessage(), e);
