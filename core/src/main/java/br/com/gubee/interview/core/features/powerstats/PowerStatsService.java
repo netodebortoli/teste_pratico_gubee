@@ -31,6 +31,13 @@ public class PowerStatsService {
                 .build();
     }
 
+    private PowerStats findPowerStatsById(UUID id) {
+        PowerStats powerStatsEntity = powerStatsRepository.findById(id);
+        if (powerStatsEntity == null)
+            throw new EntityNotFoundException("PowerStats de ID " + id + " não encontrado");
+        return powerStatsEntity;
+    }
+
     @Transactional(rollbackFor = { Exception.class })
     public UUID create(@Valid @NotNull PowerStatsDTO powerStatsDTO) {
         return powerStatsRepository.create(new PowerStats(powerStatsDTO));
@@ -38,9 +45,7 @@ public class PowerStatsService {
 
     @Transactional(rollbackFor = { Exception.class })
     public PowerStatsDTO update(@NotNull UUID id, @Valid @NotNull PowerStatsDTO powerStatsDTO) {
-        PowerStats powerStatsEntity = powerStatsRepository.findById(id);
-        if (powerStatsEntity == null)
-            throw new EntityNotFoundException("PowerStats de ID " + id + " não encontrado");
+        PowerStats powerStatsEntity = findPowerStatsById(id);
         powerStatsEntity.setStrength(powerStatsDTO.getStrength());
         powerStatsEntity.setAgility(powerStatsDTO.getAgility());
         powerStatsEntity.setDexterity(powerStatsDTO.getDexterity());
@@ -51,16 +56,12 @@ public class PowerStatsService {
     }
 
     public PowerStatsDTO findById(@NotNull UUID id) {
-        PowerStats powerStatsEntity = this.powerStatsRepository.findById(id);
-        if (powerStatsEntity == null)
-            throw new EntityNotFoundException("PowerStats de ID " + id + " não encontrado");
+        PowerStats powerStatsEntity = findPowerStatsById(id);
         return buildPowerStats(powerStatsEntity);
     }
 
     public void delete(@NotNull UUID id) {
-        PowerStats powerStatsEntity = powerStatsRepository.findById(id);
-        if (powerStatsEntity == null)
-            throw new EntityNotFoundException("PowerStats de ID: " + id + " não encontrado");
+        findPowerStatsById(id);
         if (!powerStatsRepository.delete(id))
             throw new NegocioException("Erro ao deletar PowerStats de ID: " + id);
     }

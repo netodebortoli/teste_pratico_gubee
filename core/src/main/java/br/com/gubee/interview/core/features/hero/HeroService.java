@@ -15,6 +15,7 @@ import br.com.gubee.interview.core.exception.EntityNotFoundException;
 import br.com.gubee.interview.core.exception.NegocioException;
 import br.com.gubee.interview.core.features.powerstats.PowerStatsService;
 import br.com.gubee.interview.entity.Hero;
+import br.com.gubee.interview.entity.model.CompareHero;
 import br.com.gubee.interview.entity.model.HeroDTO;
 import br.com.gubee.interview.entity.model.PowerStatsDTO;
 import lombok.AllArgsConstructor;
@@ -47,6 +48,13 @@ public class HeroService {
                 .build();
     }
 
+    private Hero findHeroById(UUID id) {
+        Hero heroEntity = heroRepository.findById(id);
+        if (heroEntity == null)
+            throw new EntityNotFoundException("Herói de ID: " + id + " não encontrado");
+        return heroEntity;
+    }
+
     public List<HeroDTO> findAll(String filter) {
         if (filter != null && StringUtils.hasText(filter))
             return heroRepository.findAllWithFilterName(filter);
@@ -63,9 +71,7 @@ public class HeroService {
 
     @Transactional(rollbackFor = { Exception.class })
     public HeroDTO update(@NotNull UUID id, @Valid @NotNull HeroDTO heroRequest) {
-        Hero heroEntity = heroRepository.findById(id);
-        if (heroEntity == null)
-            throw new EntityNotFoundException("Herói de ID: " + id + " não encontrado");
+        Hero heroEntity = findHeroById(id);
         heroEntity.setName(heroRequest.getName());
         heroEntity.setRace(heroRequest.getRace());
         validateHero(heroEntity);
@@ -78,21 +84,21 @@ public class HeroService {
     }
 
     public HeroDTO findById(@NotNull UUID id) {
-        Hero heroEntity = heroRepository.findById(id);
-        if (heroEntity == null)
-            throw new EntityNotFoundException("Herói de ID: " + id + " não encontrado");
+        Hero heroEntity = findHeroById(id);
         PowerStatsDTO powerStats = powerStatsService.findById(heroEntity.getPowerStatsId());
         return buildHero(heroEntity, powerStats);
     }
 
     @Transactional(rollbackFor = { Exception.class })
     public void delete(@NotNull UUID id) {
-        Hero heroEntity = heroRepository.findById(id);
-        if (heroEntity == null)
-            throw new EntityNotFoundException("Herói de ID: " + id + " não encontrado");
+        Hero heroEntity = findHeroById(id);
         if (!heroRepository.delete(id))
             throw new NegocioException("Erro ao deletar Herói de ID: " + id);
         powerStatsService.delete(heroEntity.getPowerStatsId());
+    }
+
+    public CompareHero compareHeroes(@Valid @NotNull CompareHero compare) {
+        return compare;
     }
 
     private void validateHero(Hero hero) {

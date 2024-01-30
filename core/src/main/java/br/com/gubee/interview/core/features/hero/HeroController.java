@@ -73,7 +73,7 @@ public class HeroController {
             @RequestParam(required = true, name = "idHeroOne") @NotNull UUID idHeroOne,
             @RequestParam(required = true, name = "idHeroTwo") @NotNull UUID idHeroTwo) {
         CompareHero compare = new CompareHero(idHeroOne, idHeroTwo);
-                
+       // chama o service         
         return ok().body(compare);
     }
 
