@@ -70,10 +70,10 @@ public class HeroController {
 
     @GetMapping(value = "/compare")
     public ResponseEntity<CompareHero> compareHero(
-            @RequestParam(required = true, name = "idHeroOne") @NotNull UUID idHeroOne,
-            @RequestParam(required = true, name = "idHeroTwo") @NotNull UUID idHeroTwo) {
-        CompareHero compare = new CompareHero(idHeroOne, idHeroTwo);
-       // chama o service         
+            @RequestParam(required = true, name = "heroOneId") @NotNull UUID heroOneId,
+            @RequestParam(required = true, name = "heroTwoId") @NotNull UUID heroTwoId) {
+        CompareHero compare = new CompareHero(heroOneId, heroTwoId);
+        compare = heroService.compareHeroes(compare);
         return ok().body(compare);
     }
 

@@ -40,7 +40,7 @@ public class HeroRepository {
         return namedParameterJdbcTemplate.query(FIND_ALL_QUERY, new MapperHero.MapperToDTO());
     }
 
-    public List<HeroDTO> findAllWithFilterName(String filteredName) {
+    List<HeroDTO> findAllWithFilterName(String filteredName) {
         final Map<String, Object> params = Map.of("name", filteredName);
         StringBuilder sqlBuilder = new StringBuilder();
         sqlBuilder.append(FIND_ALL_QUERY);

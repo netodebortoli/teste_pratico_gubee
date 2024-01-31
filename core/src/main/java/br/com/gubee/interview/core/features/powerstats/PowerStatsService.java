@@ -33,8 +33,9 @@ public class PowerStatsService {
 
     private PowerStats findPowerStatsById(UUID id) {
         PowerStats powerStatsEntity = powerStatsRepository.findById(id);
-        if (powerStatsEntity == null)
+        if (powerStatsEntity == null) {
             throw new EntityNotFoundException("PowerStats de ID " + id + " não encontrado");
+        }
         return powerStatsEntity;
     }
 
@@ -50,8 +51,9 @@ public class PowerStatsService {
         powerStatsEntity.setAgility(powerStatsDTO.getAgility());
         powerStatsEntity.setDexterity(powerStatsDTO.getDexterity());
         powerStatsEntity.setIntelligence(powerStatsDTO.getIntelligence());
-        if (!powerStatsRepository.update(powerStatsEntity))
+        if (!powerStatsRepository.update(powerStatsEntity)) {
             throw new NegocioException("Erro ao atualizar PowerStats de ID " + id);
+        }
         return buildPowerStats(powerStatsEntity);
     }
 
@@ -62,8 +64,9 @@ public class PowerStatsService {
 
     public void delete(@NotNull UUID id) {
         findPowerStatsById(id);
-        if (!powerStatsRepository.delete(id))
+        if (!powerStatsRepository.delete(id)) {
             throw new NegocioException("Erro ao deletar PowerStats de ID: " + id);
+        }
     }
 
 }
