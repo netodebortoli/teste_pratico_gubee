@@ -15,17 +15,17 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = PRIVATE)
 public class CompareHero {
 
-    private UUID idHeroOne;
+    private UUID heroOneId;
 
-    private PowerStatsDTO powerStatsHeroOne;
+    private ComparedStats powerStatsHeroOne;
 
-    private UUID idHeroTwo;
+    private UUID heroTwoId;
 
-    private PowerStatsDTO powerStatsHeroTwo;
+    private ComparedStats powerStatsHeroTwo;
 
-    public CompareHero(UUID idHeroOne, UUID idHeroTwo) {
-        this.idHeroOne = idHeroOne;
-        this.idHeroTwo = idHeroTwo;
+    public CompareHero(UUID heroOneId, UUID heroTwoId) {
+        this.heroOneId = heroOneId;
+        this.heroTwoId = heroTwoId;
     }
 
 }
