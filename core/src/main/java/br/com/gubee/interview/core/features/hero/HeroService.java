@@ -141,55 +141,21 @@ public class HeroService {
     }
 
     private void compareStats(ComparedStats hero1, ComparedStats hero2) {
-        compareStat(hero1, hero2, "Strength");
-        compareStat(hero1, hero2, "Agility");
-        compareStat(hero1, hero2, "Dexterity");
-        compareStat(hero1, hero2, "Intelligence");
+        compareStat(hero1, hero2, ComparedStats.STRENGHT);
+        compareStat(hero1, hero2, ComparedStats.AGILITY);
+        compareStat(hero1, hero2, ComparedStats.DEXTERITY);
+        compareStat(hero1, hero2, ComparedStats.INTELLIGENCE);
     }
 
-    private void compareStat(ComparedStats hero1, ComparedStats hero2, String statsName) {
-        Long statsHeroOne = Long.parseLong(getStatValue(hero1, statsName));
-        Long statsHeroTwo = Long.parseLong(getStatValue(hero2, statsName));
+    private void compareStat(ComparedStats hero1, ComparedStats hero2, int statsName) {
+        Long statsHeroOne = Long.parseLong(hero1.getStatsValue(statsName));
+        Long statsHeroTwo = Long.parseLong(hero2.getStatsValue(statsName));
         Long result = statsHeroOne - statsHeroTwo;
-        setStatsValue(hero1, statsName, builderResultComparedStats(getStatValue(hero1, statsName), result));
-        setStatsValue(hero2, statsName, builderResultComparedStats(getStatValue(hero2, statsName), (result * -1)));
+        hero1.setStatsValue(statsName, buildResultComparedStats(hero1.getStatsValue(statsName), result));
+        hero2.setStatsValue(statsName, buildResultComparedStats(hero2.getStatsValue(statsName), (result * -1)));
     }
 
-    private String getStatValue(ComparedStats hero, String statsName) {
-        switch (statsName) {
-            case "Strength":
-                return hero.getStrength();
-            case "Agility":
-                return hero.getAgility();
-            case "Dexterity":
-                return hero.getDexterity();
-            case "Intelligence":
-                return hero.getIntelligence();
-            default:
-                throw new IllegalArgumentException("Status inválido: " + statsName);
-        }
-    }
-
-    private void setStatsValue(ComparedStats hero, String statsName, String resultValue) {
-        switch (statsName) {
-            case "Strength":
-                hero.setStrength(resultValue);
-                break;
-            case "Agility":
-                hero.setAgility(resultValue);
-                break;
-            case "Dexterity":
-                hero.setDexterity(resultValue);
-                break;
-            case "Intelligence":
-                hero.setIntelligence(resultValue);
-                break;
-            default:
-                throw new IllegalArgumentException("Status inválido: " + statsName);
-        }
-    }
-
-    private String builderResultComparedStats(String stats, Long result) {
+    private String buildResultComparedStats(String stats, Long result) {
         StringBuilder sb = new StringBuilder();
         sb.append(stats).append(" ");
         sb.append("(");
