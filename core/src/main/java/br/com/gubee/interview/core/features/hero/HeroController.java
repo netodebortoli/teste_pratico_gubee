@@ -7,11 +7,13 @@ import static org.springframework.http.ResponseEntity.noContent;
 import static org.springframework.http.ResponseEntity.ok;
 
 import java.net.URI;
-import java.util.List;
 import java.util.UUID;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Max;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -27,6 +29,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import br.com.gubee.interview.entity.model.CompareHero;
 import br.com.gubee.interview.entity.model.HeroDTO;
+import br.com.gubee.interview.entity.model.PageResponse;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -38,8 +41,11 @@ public class HeroController {
     private final HeroService heroService;
 
     @GetMapping
-    public ResponseEntity<List<HeroDTO>> findAll(@RequestParam(required = false, name = "filter") String filter) {
-        List<HeroDTO> heroes = heroService.findAll(filter);
+    public ResponseEntity<PageResponse> findAll(
+            @RequestParam(required = false) String filter,
+            @RequestParam(defaultValue = "0") @PositiveOrZero int page,
+            @RequestParam(defaultValue = "10") @Positive @Max(50) int pageSize) {
+        PageResponse heroes = heroService.findAll(filter, page, pageSize);
         return ok().body(heroes);
     }
 
@@ -70,8 +76,8 @@ public class HeroController {
 
     @GetMapping(value = "/compare")
     public ResponseEntity<CompareHero> compareHero(
-            @RequestParam(required = true, name = "heroOneId") @NotNull UUID heroOneId,
-            @RequestParam(required = true, name = "heroTwoId") @NotNull UUID heroTwoId) {
+            @RequestParam(required = true) @NotNull UUID heroOneId,
+            @RequestParam(required = true) @NotNull UUID heroTwoId) {
         CompareHero compare = new CompareHero(heroOneId, heroTwoId);
         compare = heroService.compareHeroes(compare);
         return ok().body(compare);

@@ -6,6 +6,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -16,6 +19,8 @@ import lombok.RequiredArgsConstructor;
 @Repository
 @RequiredArgsConstructor
 public class HeroRepository {
+
+    private static final String BLANK_SPACE = " ";
 
     private static final String FIND_ALL_QUERY = "SELECT h.name, h.race, ps.strength," +
             " ps.agility, ps.dexterity, ps.intelligence" +
@@ -32,20 +37,72 @@ public class HeroRepository {
 
     private static final String FIND_BY_NAME_QUERY = "SELECT * FROM hero WHERE lower(name) LIKE lower(:name) LIMIT 1";
 
+    private static final String ROW_COUNT_QUERY = "SELECT count(id) FROM hero h";
+
     private static final String DELETE_BY_ID_QUERY = "DELETE FROM hero WHERE id = :id";
 
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
-    List<HeroDTO> findAll(String filter) {
-        return namedParameterJdbcTemplate.query(FIND_ALL_QUERY, new MapperHero.MapperToDTO());
+    private Integer getTotalRows(String sql, Map<String, Object> params) {
+        return namedParameterJdbcTemplate.query(
+                sql,
+                params,
+                (rs) -> {
+                    if (rs.next())
+                        return rs.getInt("count");
+                    else
+                        return null;
+                });
     }
 
-    List<HeroDTO> findAllWithFilterName(String filteredName) {
-        final Map<String, Object> params = Map.of("name", filteredName);
+    private Integer getTotalRows() {
+        return namedParameterJdbcTemplate.query(
+                ROW_COUNT_QUERY,
+                (rs) -> {
+                    if (rs.next())
+                        return rs.getInt("count");
+                    else
+                        return null;
+                });
+    }
+
+    private String buildSqlPagination(Pageable page) {
+        StringBuilder sqlPage = new StringBuilder();
+        sqlPage.append("LIMIT").append(BLANK_SPACE);
+        sqlPage.append(page.getPageSize()).append(BLANK_SPACE);
+        sqlPage.append("OFFSET").append(BLANK_SPACE);
+        sqlPage.append(page.getOffset());
+        return sqlPage.toString();
+    }
+
+    Page<HeroDTO> findAll(Pageable page) {
+        Integer totalElements = getTotalRows();
+
         StringBuilder sqlBuilder = new StringBuilder();
-        sqlBuilder.append(FIND_ALL_QUERY);
-        sqlBuilder.append(" WHERE lower(h.name) LIKE lower(concat('%',:name,'%'))");
-        return namedParameterJdbcTemplate.query(sqlBuilder.toString(), params, new MapperHero.MapperToDTO());
+        sqlBuilder.append(FIND_ALL_QUERY).append(BLANK_SPACE);
+        sqlBuilder.append(buildSqlPagination(page));
+
+        List<HeroDTO> heroes = namedParameterJdbcTemplate.query(
+                sqlBuilder.toString(), new MapperHero.MapperToDTO());
+        return new PageImpl<HeroDTO>(heroes, page, totalElements);
+    }
+
+    Page<HeroDTO> findAll(String filteredName, Pageable page) {
+        final Map<String, Object> params = Map.of("name", filteredName);
+        final String sqlFilter = "WHERE lower(h.name) LIKE lower(concat('%',:name,'%'))";
+
+        StringBuilder sqlCountRow = new StringBuilder();
+        sqlCountRow.append(ROW_COUNT_QUERY).append(BLANK_SPACE);
+        sqlCountRow.append(sqlFilter);
+        Integer totalElements = getTotalRows(sqlCountRow.toString(), params);
+
+        StringBuilder sqlBuilder = new StringBuilder();
+        sqlBuilder.append(FIND_ALL_QUERY).append(BLANK_SPACE);
+        sqlBuilder.append(sqlFilter).append(BLANK_SPACE);
+        sqlBuilder.append(buildSqlPagination(page));
+        List<HeroDTO> heroes = namedParameterJdbcTemplate.query(sqlBuilder.toString(), params,
+                new MapperHero.MapperToDTO());
+        return new PageImpl<HeroDTO>(heroes, page, totalElements);
     }
 
     UUID create(Hero hero) {

@@ -1,11 +1,15 @@
 package br.com.gubee.interview.core.features.hero;
 
-import java.util.List;
 import java.util.UUID;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Max;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -18,6 +22,7 @@ import br.com.gubee.interview.entity.Hero;
 import br.com.gubee.interview.entity.model.CompareHero;
 import br.com.gubee.interview.entity.model.ComparedStats;
 import br.com.gubee.interview.entity.model.HeroDTO;
+import br.com.gubee.interview.entity.model.PageResponse;
 import br.com.gubee.interview.entity.model.PowerStatsDTO;
 import lombok.AllArgsConstructor;
 
@@ -57,11 +62,20 @@ public class HeroService {
         return heroEntity;
     }
 
-    public List<HeroDTO> findAll(String filter) {
+    public PageResponse findAll(String filter,
+            @PositiveOrZero int page, @Positive @Max(100) int pageSize) {
+        Page<HeroDTO> pageHeroes;
         if (filter != null && StringUtils.hasText(filter)) {
-            return heroRepository.findAllWithFilterName(filter);
+            pageHeroes = heroRepository.findAll(filter, PageRequest.of(page, pageSize));
+        } else {
+            pageHeroes = heroRepository.findAll(PageRequest.of(page, pageSize));
         }
-        return heroRepository.findAll(filter);
+        return PageResponse.builder()
+                .result(pageHeroes.getContent())
+                .totalElements(pageHeroes.getTotalElements())
+                .totalPages(Long.valueOf(pageHeroes.getTotalPages()))
+                .currentPage(Long.valueOf(pageHeroes.getNumber()))
+                .build();
     }
 
     @Transactional(rollbackFor = { Exception.class })
@@ -137,8 +151,8 @@ public class HeroService {
         Long statsHeroOne = Long.parseLong(getStatValue(hero1, statsName));
         Long statsHeroTwo = Long.parseLong(getStatValue(hero2, statsName));
         Long result = statsHeroOne - statsHeroTwo;
-        setStatsValue(hero1, statsName, stringBuilderResultCompareStats(getStatValue(hero1, statsName), result));
-        setStatsValue(hero2, statsName, stringBuilderResultCompareStats(getStatValue(hero2, statsName), (result * -1)));
+        setStatsValue(hero1, statsName, builderResultComparedStats(getStatValue(hero1, statsName), result));
+        setStatsValue(hero2, statsName, builderResultComparedStats(getStatValue(hero2, statsName), (result * -1)));
     }
 
     private String getStatValue(ComparedStats hero, String statsName) {
@@ -175,10 +189,10 @@ public class HeroService {
         }
     }
 
-    private String stringBuilderResultCompareStats(String stats, Long result) {
+    private String builderResultComparedStats(String stats, Long result) {
         StringBuilder sb = new StringBuilder();
-        sb.append(stats);
-        sb.append(" (");
+        sb.append(stats).append(" ");
+        sb.append("(");
         if (result > 0) {
             sb.append("+");
         } else if (result == 0) {
