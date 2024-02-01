@@ -1,54 +1,219 @@
-# Teste Programador Backend Júnior/Trainee
-Teste destinado aos candidatos a vaga de Programador Backend <b>Júnior</b>. 
+<h1 align="center">
+  Teste prático Gubee - API Heroes
+</h1>
 
-## Descrição
-Um cliente chamado Bruce Wayne nos contratou para fazer um sistema com o objetivo de catalogar os super-heróis existentes.
-</br>
-Parece uma missão difícil, mas, não se preocupe, o seu papel não será o de sair por aí procurando por heróis, vamos deixar isso para o Sr. Wayne...
-</br>
-Seu papel é desenvolver uma API com as operações básicas de cadastro de um herói e algum mago (coff, coff) do front-end fará as telas.
-</br>
+API desenvolvida em Java, que oferece gerenciamento de hérois (CRUD) e comparação entre hérois (quem é o mais forte/fraco), como desafio proposto para vaga de estágio pela Gubee.
 
-## Requisitos
-Bom, aqui começa a explicação do que você terá que nos entregar. Leia com atenção.
-</br>
-Ah, não se preocupe com o setup do projeto, o Alfred (acho que ele é tipo um mordono do Sr. Wayne) começou o projeto para nós e inclusive o endpoint de cadastro de heróis já está quase pronto... É, Quase...
-</br>
-Quando tentamos rodar os testes do projeto identificamos um bug no cadastro, algum NullPointerException. O erro aconteceu no teste de integração.<p> Dito isso vamos deixar uma lista com as tarefas:
+## Tecnologias e Ferramentas
 
-- [x] Resolver o bug no endpoint de cadastro de heróis;
-- [x] Criar endpoint de busca de heróis e seus atributos por ID. ***Caso não encontre o herói o sistema deve retornar um erro 404 (Not Found)***;
-- [x] Criar endpoint de busca de heróis e seus atributos por filtro, nesse caso o filtro será apenas o nome. ***Caso não encontre nenhum herói o sistema deve retornar um sucesso 200 com o body vazio***;
-- [x] Criar endpoint de atualização de heróis, todos os campos poderão ser atualizados. ***Caso não encontre o herói o sistema deve retornar um erro 404 (Not Found)***
-- [x] Criar endpoint de exclusão de heróis. A exclusão será física, ok? (Física?! É, deleta o registro da base). ***Caso não encontre o herói o sistema deve retornar um erro 404 (Not Found)***.
+- Spring Boot
+- PostgresSQL
+- Spring JDBC
+- Flyway
 
-Ah, tem algo mais! O Sr. Wayne nos pediu para criar um endpoint onde ele possa selecionar dois heróis e comparar seus atributos força, agilidade, destreza e inteligência. Como resultado, o sistema deve retornar um objeto contendo os id's e a diferença dos atributos (positivo se maior, negativo se menor) de cada herói. Dá uma pensada em como vai ficar esse objeto e o caminho do endpoint, tudo bem?
-<p>
-Agora sim, terminamos! Se você nos entregar isso que pedimos garanto que o Sr. Wayne vai pirar!!!
+## Práticas adotadas
 
-## Considerações
-Leia essas instruções para ganhar tempo no desenvolvimento, ok? ;)
-</br>
-#### Primeiro Passo
-Como primeiro passo faça um ***fork*** desse projeto na sua conta do GitHub, se não tiver uma conta é só criar uma nova.
-</br>
-***Não iremos avaliar provas que não estejam nesse padrão, então MUITA ATENÇÃO nessa dica.***
-#### Correção
-Ao término da prova, envie-nos o link do github, e assim que iremos avaliar o código proposto.
-#### Configurações
-- OpenJDK 17 instalado;
-- Maven na versão 3.8+ instalado;
-- IDE pode ser o de preferência, mas gostamos bastante do IntelliJ por aqui;
-- Docker e docker-compose instalados.
+- SOLID
+- Consultas e consultas com filtro
+- Paginação
+- Uso de DTOs e Mapper
+- Injeção de Dependências
+- Auditoria sobre criação e atualização da entidade
 
-#### Testes
-Para rodar os testes (unitários e de integração) utilize o comando a seguir:
+## Como Executar
+
+### Localmente
+- Ligar o serviço do Docker
+- Clonar repositório git
+- Executar
+````
+comando aqui pra subir o container do banco
+````
+- Construir o projeto: (corrigir)
 ```
-mvn clean verify
+./mvnw clean package
+```
+- Executar: (corrigir)
+```
+java -jar place-service/target/place-service-0.0.1-SNAPSHOT.jar
+```
+## API Endpoints
+
+Para fazer as requisições HTTP abaixo, foi utilizada a ferramenta [Insomnia](https://insomnia.rest/download)
+
+A API é acessada localmente em:
+````
+localhost:8080/api/v1/heroes
+````
+- POST
+```
+Request: localhost:8080/api/v1/heroes
+Content-Type: application/json
+{
+	"name": "LANTERNA VERDE",
+	"race": "HUMAN",
+	"strength": 8,
+	"intelligence": 8,
+	"dexterity": 10,
+	"agility": 7
+}
+
+Response:
+Status: 201 CREATED
+```
+- PUT /{id}
+```
+Request: http://localhost:8080/api/v1/heroes/{id}
+Content-Type: application/json
+{
+	"name": "SUPERMAN",
+	"race": "HUMAN",
+	"strength": 10,
+	"intelligence": 9,
+	"dexterity": 10,
+	"agility": 10
+}
+
+Response:
+Status: 200 OK
+{
+	"name": "SUPERMAN",
+	"race": "HUMAN",
+	"strength": 10,
+	"intelligence": 9,
+	"dexterity": 10,
+	"agility": 10
+}
+```
+- DELETE /{id}
+```
+Request: http://localhost:8080/api/v1/heroes/{id}
+
+Response:
+Status: 204 NO CONTENT
+```
+- GET
+```
+Request: localhost:8080/api/v1/heroes
+
+Response:
+Status: 200 OK
+{
+	"result": [],
+	"total_pages": 0,
+	"total_elements": 0,
+	"current_page": 0
+}
+```
+- GET /{id}
+```
+Request: localhost:8080/api/v1/heroes/{id}
+Content-Type: application/json
+
+Response:
+Status: 200 OK
+{
+	"name": "FLASH",
+	"race": "HUMAN",
+	"strength": 5,
+	"agility": 10,
+	"dexterity": 6,
+	"intelligence": 7
+}
 ```
 
-#### Bônus
-Será considerado um plus os candidatos que entregarem:
-- Testes unitários e de integração das funcionalidades desenvolvidas;
-- Bom uso dos padrões de REST;
-- Um `docker-compose.yml` funcional para execução da aplicação. (Banco de Dados + API)
+- GET ?name=exemplo
+```
+Request: http://localhost:8080/api/v1/heroes?name=mulher
+Content-Type: application/json
+
+Response:
+Status: 200 OK
+{
+	"result": [
+		{
+			"name": "MULHER MARAVILHA",
+			"race": "DIVINE",
+			"strength": 10,
+			"agility": 7,
+			"dexterity": 10,
+			"intelligence": 5
+		}
+	],
+	"total_pages": 1,
+	"total_elements": 1,
+	"current_page": 0
+}
+```
+
+- GET ?page=5&pageSize=1
+```
+Request: http://localhost:8080/api/v1/heroes?page=0&pageSize=5
+Content-Type: application/json
+
+Response:
+Status: 200 OK
+{
+	"result": [
+		{
+			"name": "FLASH",
+			"race": "HUMAN",
+			"strength": 10,
+			"agility": 7,
+			"dexterity": 10,
+			"intelligence": 5
+		}
+	],
+	"total_pages": 11,
+	"total_elements": 11,
+	"current_page": 5
+}
+```
+
+- GET ?page=0&pageSize=5&name=batman
+```
+Request: http://localhost:8080/api/v1/heroes?page=0&pageSize=5&name=batman
+Content-Type: application/json
+
+Response:
+Status: 200 OK
+{
+	"result": [
+		{
+			"name": "BATMAN",
+			"race": "HUMAN",
+			"strength": 10,
+			"agility": 7,
+			"dexterity": 10,
+			"intelligence": 5
+		}
+	],
+	"total_pages": 1,
+	"total_elements": 1,
+	"current_page": 0
+}
+```
+
+- GET /compare
+```
+Request: http://localhost:8080/api/v1/heroes/compare?heroOneId={id}&heroTwoId={id}
+
+Response:
+Status: 200 OK
+{
+	"hero_one_id": "{id}",
+	"power_stats_hero_one": {
+		"strength": "10 (+8)",
+		"agility": "7 (+5)",
+		"dexterity": "10 (+8)",
+		"intelligence": "5 (-5)"
+	},
+	"hero_two_id": "{id}",
+	"power_stats_hero_two": {
+		"strength": "2 (-8)",
+		"agility": "2 (-5)",
+		"dexterity": "2 (-8)",
+		"intelligence": "10 (+5)"
+	}
+}
+```

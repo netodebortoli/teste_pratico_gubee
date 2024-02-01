@@ -62,11 +62,11 @@ public class HeroService {
         return heroEntity;
     }
 
-    public PageResponse findAll(String filter,
+    public PageResponse findAll(String name,
             @PositiveOrZero int page, @Positive @Max(100) int pageSize) {
         Page<HeroDTO> pageHeroes;
-        if (filter != null && StringUtils.hasText(filter)) {
-            pageHeroes = heroRepository.findAll(filter, PageRequest.of(page, pageSize));
+        if (name != null && StringUtils.hasText(name)) {
+            pageHeroes = heroRepository.findAll(name, PageRequest.of(page, pageSize));
         } else {
             pageHeroes = heroRepository.findAll(PageRequest.of(page, pageSize));
         }

@@ -42,10 +42,10 @@ public class HeroController {
 
     @GetMapping
     public ResponseEntity<PageResponse> findAll(
-            @RequestParam(required = false) String filter,
+            @RequestParam(required = false) String name,
             @RequestParam(defaultValue = "0") @PositiveOrZero int page,
             @RequestParam(defaultValue = "10") @Positive @Max(50) int pageSize) {
-        PageResponse heroes = heroService.findAll(filter, page, pageSize);
+        PageResponse heroes = heroService.findAll(name, page, pageSize);
         return ok().body(heroes);
     }
 
@@ -62,13 +62,13 @@ public class HeroController {
         return ok().body(hero);
     }
 
-    @GetMapping(value = "/{id}", consumes = APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/{id}")
     public ResponseEntity<HeroDTO> findById(@PathVariable @NotNull UUID id) {
         HeroDTO hero = heroService.findById(id);
         return ok().body(hero);
     }
 
-    @DeleteMapping(value = "/{id}", consumes = APPLICATION_JSON_VALUE)
+    @DeleteMapping(value = "/{id}")
     public ResponseEntity<Void> delete(@PathVariable @NotNull UUID id) {
         heroService.delete(id);
         return noContent().build();
