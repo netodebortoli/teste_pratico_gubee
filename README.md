@@ -19,14 +19,23 @@ API desenvolvida em Java, que oferece gerenciamento de hérois (CRUD) e compara�
 - Injeção de Dependências
 - Auditoria sobre criação e atualização da entidade
 
-## Como Executar pelo Docker
+## Executando a aplicação
+### _Pelo Docker_
 - Ligar o serviço do Docker
 - Clonar este repositório
 - Abrir a pasta principal(raíz) do projeto
-- Executar o comando que irá subir o banco:
+- Executar o comando que irá subir a API e o Banco de Dados em dois containers:
 ````
 docker compose up
 ````
+### _Localmente_
+- Ligar o serviço do Docker
+- Clonar este repositório
+- Abrir a pasta principal(raíz) do projeto
+- Executar o comando que irá subir um container do Banco de Dados
+```
+docker compose up db
+```
 - Construir o projeto:
 ```
 mvn clean package
