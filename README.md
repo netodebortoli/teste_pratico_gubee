@@ -7,17 +7,20 @@ API desenvolvida em Java, que oferece gerenciamento de hérois (CRUD) e compara�
 ## Tecnologias e Ferramentas
 
 - Spring Boot
-- PostgresSQL
 - Spring JDBC
+- PostgresSQL
 - Flyway
+- Docker
 
 ## Práticas adotadas
 
+- API Rest
 - Consultas e consultas com filtro
 - Paginação
 - Uso de DTOs e Mapper
 - Injeção de Dependências
 - Auditoria sobre criação e atualização da entidade
+- Tratamento de erro e exceção personalizada
 
 ## Executando a aplicação
 ### _Pelo Docker_
