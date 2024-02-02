@@ -1,10 +1,36 @@
 version: '3.8'
 
 services:
-  postgres:
+  db:
+    container_name: db
     build: ./core/src/main/resources/db/schema
     ports:
       - 5432:5432
     environment:
       POSTGRES_PASSWORD: gubee
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - app-network
 
+  api:
+    container_name: api
+    build: ./
+    ports:
+      - 8080:8080
+    environment:
+      POSTGRES_USER: gubee
+      POSTGRES_PASSWORD: gubee
+      JDBC_URL: jdbc:postgresql://db:5432/postgres
+    networks:
+      - app-network
+    depends_on:
+      - db
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  postgres-data:
+    driver: local

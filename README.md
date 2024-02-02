@@ -13,29 +13,27 @@ API desenvolvida em Java, que oferece gerenciamento de hérois (CRUD) e compara�
 
 ## Práticas adotadas
 
-- SOLID
 - Consultas e consultas com filtro
 - Paginação
 - Uso de DTOs e Mapper
 - Injeção de Dependências
 - Auditoria sobre criação e atualização da entidade
 
-## Como Executar
-
-### Localmente
+## Como Executar pelo Docker
 - Ligar o serviço do Docker
-- Clonar repositório git
-- Executar
+- Clonar este repositório
+- Abrir a pasta principal(raíz) do projeto
+- Executar o comando que irá subir o banco:
 ````
-comando aqui pra subir o container do banco
+docker compose up
 ````
-- Construir o projeto: (corrigir)
+- Construir o projeto:
 ```
-./mvnw clean package
+mvn clean package
 ```
-- Executar: (corrigir)
+- Executar o **_.jar_** do projeto: 
 ```
-java -jar place-service/target/place-service-0.0.1-SNAPSHOT.jar
+java -jar core/target/gubee-interview.jar
 ```
 ## API Endpoints
 
