@@ -1,12 +1,9 @@
 package br.com.gubee.interview.core.features.hero;
 
-import static br.com.gubee.interview.core.features.hero.HeroConstant.BATMAN;
-import static br.com.gubee.interview.core.features.hero.HeroConstant.HEROES;
-import static br.com.gubee.interview.core.features.hero.HeroConstant.NEW_BATMAN;
-import static org.hamcrest.Matchers.hasSize;
+
+import static br.com.gubee.interview.core.features.hero.utils.HeroConstant.BATMAN_DTO;
+import static br.com.gubee.interview.core.features.hero.utils.HeroConstant.NEW_BATMAN_DTO;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -17,7 +14,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import java.util.List;
 import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
@@ -33,7 +29,6 @@ import br.com.gubee.interview.core.exception.EntityNotFoundException;
 import br.com.gubee.interview.core.exception.NegocioException;
 import br.com.gubee.interview.entity.model.CompareHero;
 import br.com.gubee.interview.entity.model.HeroDTO;
-import br.com.gubee.interview.entity.model.PageResponse;
 
 @WebMvcTest(HeroController.class)
 class HeroControllerTest {
@@ -51,11 +46,11 @@ class HeroControllerTest {
 
    @Test
    void createHero_WithValidData_ReturnsCreated() throws Exception {
-      when(heroService.create(BATMAN)).thenReturn(UUID.randomUUID());
+      when(heroService.create(BATMAN_DTO)).thenReturn(UUID.randomUUID());
 
       mockMvc.perform(
             post(uriRequest)
-                  .content(objectMapper.writeValueAsString(BATMAN))
+                  .content(objectMapper.writeValueAsString(BATMAN_DTO))
                   .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isCreated())
             .andExpect(header().exists("Location"));
@@ -75,28 +70,28 @@ class HeroControllerTest {
    @Test
    void updateHero_WithExistingId_ReturnsUpdatedHero() throws Exception {
       UUID id = UUID.randomUUID();
-      when(heroService.update(id, BATMAN)).thenReturn(NEW_BATMAN);
+      when(heroService.update(id, BATMAN_DTO)).thenReturn(NEW_BATMAN_DTO);
 
       mockMvc.perform(
             put(uriRequest + "/{id}", id)
-                  .content(objectMapper.writeValueAsString(BATMAN))
+                  .content(objectMapper.writeValueAsString(BATMAN_DTO))
                   .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.name").value(NEW_BATMAN.getName()))
-            .andExpect(jsonPath("$.strength").value(NEW_BATMAN.getStrength()))
-            .andExpect(jsonPath("$.intelligence").value(NEW_BATMAN.getIntelligence()));
+            .andExpect(jsonPath("$.name").value(NEW_BATMAN_DTO.getName()))
+            .andExpect(jsonPath("$.strength").value(NEW_BATMAN_DTO.getStrength()))
+            .andExpect(jsonPath("$.intelligence").value(NEW_BATMAN_DTO.getIntelligence()));
 
    }
 
    @Test
    void getHero_WithExistingId_ReturnsHero() throws Exception {
       UUID id = UUID.randomUUID();
-      when(heroService.findById(id)).thenReturn(BATMAN);
+      when(heroService.findById(id)).thenReturn(BATMAN_DTO);
 
       mockMvc.perform(
             get(uriRequest + "/{id}", id))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.name").value(BATMAN.getName()));
+            .andExpect(jsonPath("$.name").value(BATMAN_DTO.getName()));
    }
 
    @Test
@@ -165,8 +160,8 @@ class HeroControllerTest {
                   .param("heroOneId", heroOneId.toString())
                   .param("heroTwoId", heroTwoId.toString()))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.hero_one_id").value(heroOneId.toString()))
-            .andExpect(jsonPath("$.hero_two_id").value(heroTwoId.toString()));
+            .andExpect(jsonPath("$.heroOneId").value(heroOneId.toString()))
+            .andExpect(jsonPath("$.heroTwoId").value(heroTwoId.toString()));
    }
 
    @Test

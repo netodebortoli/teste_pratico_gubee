@@ -75,7 +75,7 @@ public class HeroRepository {
         return sqlPage.toString();
     }
 
-    Page<HeroDTO> findAll(Pageable page) {
+    public Page<HeroDTO> findAll(Pageable page) {
         Integer totalElements = getTotalRows();
 
         StringBuilder sqlBuilder = new StringBuilder();
@@ -87,7 +87,7 @@ public class HeroRepository {
         return new PageImpl<HeroDTO>(heroes, page, totalElements);
     }
 
-    Page<HeroDTO> findAll(String filteredName, Pageable page) {
+    public Page<HeroDTO> findAll(String filteredName, Pageable page) {
         final Map<String, Object> params = Map.of("name", filteredName);
         final String sqlFilter = "WHERE lower(h.name) LIKE lower(concat('%',:name,'%'))";
 
@@ -105,7 +105,7 @@ public class HeroRepository {
         return new PageImpl<HeroDTO>(heroes, page, totalElements);
     }
 
-    UUID create(Hero hero) {
+    public UUID create(Hero hero) {
         final Map<String, Object> params = Map.of(
                 "name", hero.getName(),
                 "race", hero.getRace().name(),
@@ -113,7 +113,7 @@ public class HeroRepository {
         return namedParameterJdbcTemplate.queryForObject(CREATE_QUERY, params, UUID.class);
     }
 
-    boolean update(Hero hero) {
+    public boolean update(Hero hero) {
         final Map<String, Object> params = Map.of(
                 "name", hero.getName(),
                 "race", hero.getRace().name(),
@@ -122,7 +122,7 @@ public class HeroRepository {
         return namedParameterJdbcTemplate.update(UPDATE_QUERY, params) != 0;
     }
 
-    Hero findById(UUID id) {
+    public Hero findById(UUID id) {
         final Map<String, Object> params = Map.of("id", id);
         return namedParameterJdbcTemplate.query(
                 FIND_BY_ID_QUERY,
@@ -135,7 +135,7 @@ public class HeroRepository {
                 });
     }
 
-    Hero findByName(String name) {
+    public Hero findByName(String name) {
         final Map<String, Object> params = Map.of("name", name);
         return namedParameterJdbcTemplate.query(
                 FIND_BY_NAME_QUERY,
@@ -148,7 +148,7 @@ public class HeroRepository {
                 });
     }
 
-    boolean delete(UUID id) {
+    public boolean delete(UUID id) {
         final Map<String, Object> params = Map.of("id", id);
         return namedParameterJdbcTemplate.update(DELETE_BY_ID_QUERY, params) != 0;
     }
