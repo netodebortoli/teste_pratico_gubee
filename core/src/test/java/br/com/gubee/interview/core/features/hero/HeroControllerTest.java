@@ -160,8 +160,8 @@ class HeroControllerTest {
                   .param("heroOneId", heroOneId.toString())
                   .param("heroTwoId", heroTwoId.toString()))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.heroOneId").value(heroOneId.toString()))
-            .andExpect(jsonPath("$.heroTwoId").value(heroTwoId.toString()));
+            .andExpect(jsonPath("$.hero_one_id").value(heroOneId.toString()))
+            .andExpect(jsonPath("$.hero_two_id").value(heroTwoId.toString()));
    }
 
    @Test
