@@ -22,6 +22,7 @@ public class HeroConstant {
    public static final HeroDTO REVERSE_FLASH_DTO = new HeroDTO("REVERSE_FLASH", Race.HUMAN, 10, 10, 6, 9);
    public static final HeroDTO SUPERMAN_DTO = new HeroDTO("SUPERMAN", Race.DIVINE, 10, 9, 9, 9);
    public static final HeroDTO NEW_BATMAN_DTO = new HeroDTO("NEW_BATMAN", Race.DIVINE, 10, 10, 9, 10);
+   public static final HeroDTO INVALID_HER0 = new HeroDTO("", null, null, null, null, null);
 
    public static final PowerStatsDTO POWERSTATS_BATMAN = new PowerStatsDTO(8, 8, 9, 10);
    public static final PowerStatsDTO POWERSTATS_FLASH = new PowerStatsDTO(10, 10, 7, 8);

@@ -76,8 +76,8 @@ public class HeroController {
 
     @GetMapping(value = "/compare")
     public ResponseEntity<CompareHero> compareHero(
-            @RequestParam(required = true) @NotNull UUID heroOneId,
-            @RequestParam(required = true) @NotNull UUID heroTwoId) {
+            @RequestParam(name = "heroOneId") @NotNull UUID heroOneId,
+            @RequestParam(name = "heroTwoId" ) @NotNull UUID heroTwoId) {
         CompareHero compare = new CompareHero(heroOneId, heroTwoId);
         compare = heroService.compareHeroes(compare);
         return ok().body(compare);
