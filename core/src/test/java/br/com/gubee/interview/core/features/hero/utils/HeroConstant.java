@@ -5,7 +5,6 @@ import java.util.UUID;
 
 import br.com.gubee.interview.entity.Hero;
 import br.com.gubee.interview.entity.enums.Race;
-import br.com.gubee.interview.entity.model.CompareHero;
 import br.com.gubee.interview.entity.model.HeroDTO;
 import br.com.gubee.interview.entity.model.PageResponse;
 import br.com.gubee.interview.entity.model.PowerStatsDTO;
@@ -49,7 +48,4 @@ public class HeroConstant {
          1L,
          3L,
          0L);
-
-   public static final CompareHero COMPARE_HERO = new CompareHero(BATMAN_ID, FLASH_ID);
-   public static final CompareHero INVALID_COMPARE = new CompareHero(BATMAN_ID, BATMAN_ID);
 }

@@ -1,8 +1,8 @@
 package br.com.gubee.interview.core.features.hero;
 
+import static br.com.gubee.interview.core.features.hero.utils.HeroConstant.BATMAN_DTO;
 import static br.com.gubee.interview.core.features.hero.utils.HeroConstant.BATMAN_ID;
-import static br.com.gubee.interview.core.features.hero.utils.HeroConstant.COMPARE_HERO;
-import static br.com.gubee.interview.core.features.hero.utils.HeroConstant.INVALID_COMPARE;
+import static br.com.gubee.interview.core.features.hero.utils.HeroConstant.FLASH_ID;
 import static br.com.gubee.interview.core.features.hero.utils.HeroConstant.NEW_BATMAN_DTO;
 import static br.com.gubee.interview.core.features.hero.utils.HeroConstant.RANDOM_HERO_ID;
 import static br.com.gubee.interview.core.features.hero.utils.HeroConstant.SUPERMAN_DTO;
@@ -20,6 +20,7 @@ import br.com.gubee.interview.core.exception.EntityNotFoundException;
 import br.com.gubee.interview.core.exception.NegocioException;
 import br.com.gubee.interview.core.features.powerstats.PowerStatsService;
 import br.com.gubee.interview.core.features.powerstats.PowerStatsServiceImpl;
+import br.com.gubee.interview.entity.enums.Race;
 import br.com.gubee.interview.entity.model.CompareHero;
 import br.com.gubee.interview.entity.model.HeroDTO;
 import br.com.gubee.interview.entity.model.PageResponse;
@@ -40,72 +41,127 @@ public class HeroServiceTest {
    }
 
    @Test
-   void createHero_WithValidData_ReturnsUUID() {
-      UUID sut = heroService.create(NEW_BATMAN_DTO);
+   void shouldCreateNewHero() {
+      // given
+      HeroDTO newHero = NEW_BATMAN_DTO;
+
+      // when
+      UUID sut = heroService.create(newHero);
+
+      // then
       assertThat(sut).isNotNull();
       assertThat(sut).isInstanceOf(UUID.class);
    }
 
    @Test
-   void createHero_WithAlreadyNameExists_ThrowException() {
-      assertThatThrownBy(() -> heroService.create(SUPERMAN_DTO))
+   void shouldThrowsException_WhenCreateHero_WithAlreadyNameExists() {
+      // given
+      HeroDTO batman = NEW_BATMAN_DTO;
+
+      // when
+      heroService.create(batman);
+
+      // then
+      assertThatThrownBy(() -> heroService.create(batman))
             .isInstanceOf(NegocioException.class)
-            .hasMessage("Já existe um herói com o nome " + SUPERMAN_DTO.getName());
+            .hasMessage("Já existe um herói com o nome " + batman.getName());
    }
 
    @Test
-   void updateHero_WithValidData_ReturnsUpdatedHero() {
-      HeroDTO sut = heroService.update(BATMAN_ID, NEW_BATMAN_DTO);
+   void shouldUpdatHeroAndReturnsUpdatedHero() {
+      // given
+      HeroDTO batman = BATMAN_DTO;
+      batman.setName("DIVINE BATMAN");
+      batman.setRace(Race.DIVINE);
+
+      // when
+      HeroDTO sut = heroService.update(BATMAN_ID, batman);
+
+      // then
       assertThat(sut).isNotNull();
-      assertThat(sut.getName()).isEqualTo(NEW_BATMAN_DTO.getName());
-      assertThat(sut.getRace()).isEqualTo(NEW_BATMAN_DTO.getRace());
+      assertThat(sut.getName()).isEqualTo(batman.getName());
+      assertThat(sut.getRace()).isEqualTo(batman.getRace());
    }
 
    @Test
-   void updateHero_WithInvalidId_ThrowsException() {
-      assertThatThrownBy(() -> heroService.update(RANDOM_HERO_ID, NEW_BATMAN_DTO))
+   void shouldThrowsException_WhenUpdateHero_WithInvalidId() {
+      // given
+      HeroDTO hero = BATMAN_DTO;
+      UUID id = RANDOM_HERO_ID;
+
+      // then
+      assertThatThrownBy(() -> heroService.update(id, hero))
             .isInstanceOf(EntityNotFoundException.class)
-            .hasMessage("Herói de ID: " + RANDOM_HERO_ID + " não encontrado");
+            .hasMessage("Herói de ID: " + id + " não encontrado");
    }
 
    @Test
-   void findHero_WithValidId_ReturnsHeroDTO() {
-      HeroDTO sut = heroService.findById(SUPERMAN_ID);
+   void shouldFindHero_WithValidId() {
+      // given
+      UUID idSuperman = SUPERMAN_ID;
+
+      // when
+      HeroDTO sut = heroService.findById(idSuperman);
+
+      // then
       assertThat(sut).isNotNull();
       assertThat(SUPERMAN_DTO.getName()).isEqualTo(sut.getName());
       assertThat(SUPERMAN_DTO.getRace().name()).isEqualTo(sut.getRace().name());
    }
 
    @Test
-   void findHero_WithInvalidId_ReturnsException() {
-      assertThatThrownBy(() -> heroService.findById(RANDOM_HERO_ID))
+   void shouldThrowsException_WhenFindUnexistingHero() {
+      // given
+      UUID id = RANDOM_HERO_ID;
+
+      // then
+      assertThatThrownBy(() -> heroService.findById(id))
             .isInstanceOf(EntityNotFoundException.class)
-            .hasMessage("Herói de ID: " + RANDOM_HERO_ID + " não encontrado");
+            .hasMessage("Herói de ID: " + id + " não encontrado");
    }
 
    @Test
-   void deleteHero_WithValidId_DoesNotThrowAnyExpcetion() {
-      assertThatCode(() -> heroService.delete(SUPERMAN_ID)).doesNotThrowAnyException();
+   void shouldDeleteHero() {
+      // given
+      UUID idSuperman = SUPERMAN_ID;
+
+      // when
+      heroService.delete(idSuperman);
+
+      // then
+      assertThatCode(() -> heroService.findById(idSuperman)).isInstanceOfAny(EntityNotFoundException.class);
    }
 
    @Test
-   void deleteHero_WithInvalidId_ThrowException() {
-      assertThatThrownBy(() -> heroService.delete(RANDOM_HERO_ID))
+   void shouldThrowsException_WhenDeleteUnexstingHero() {
+      // given
+      UUID id = RANDOM_HERO_ID;
+
+      // then
+      assertThatThrownBy(() -> heroService.delete(id))
             .isInstanceOf(EntityNotFoundException.class)
-            .hasMessageContaining("Herói de ID: " + RANDOM_HERO_ID + " não encontrado");
+            .hasMessageContaining("Herói de ID: " + id + " não encontrado");
    }
 
    @Test
-   void listAllHeroes_ReturnsHeroes() {
+   void shouldListAllHeroes() {
+      // when
       PageResponse sut = heroService.findAll(null, 0, 5);
+
+      // then
       assertThat(sut.getResult()).isNotNull();
       assertThat(sut.getResult()).hasSize(4);
    }
 
    @Test
-   void listAllHeroes_WithFilteredName_ReturnsFilteredHeroes() {
+   void shouldListFilteredHeroes() {
+      // given
       String heroName = "FLASH";
+
+      // when
       PageResponse sut = heroService.findAll(heroName, 0, 5);
+
+      // then
       assertThat(sut.getResult()).isNotNull();
       assertThat(sut.getResult()).hasSize(2);
       assertThat(sut.getResult().get(0).getName()).contains(heroName);
@@ -113,31 +169,52 @@ public class HeroServiceTest {
    }
 
    @Test
-   void listHeroes_WithUnesxtingHero_ReturnsEmptyList() {
+   void shouldReturnsEmptyList_WithUnesxtingHero() {
+      // given
       String heroName = "AQUAMAN";
+
+      // when
       PageResponse sut = heroService.findAll(heroName, 0, 5);
+
+      // then
       assertThat(sut.getResult()).isNotNull();
       assertThat(sut.getResult()).hasSize(0);
    }
 
    @Test
-   void compareHeroes_WithValidHeroes_ReturnsComparedHeroes() {
-      CompareHero sut = heroService.compareHeroes(COMPARE_HERO);
+   void shouldReturnsCompareHeroes_WithValidHeroes() {
+      // given
+      CompareHero compareHero = new CompareHero(FLASH_ID, SUPERMAN_ID);
+
+      // when
+      CompareHero sut = heroService.compareHeroes(compareHero);
+
+      // then
       assertThat(sut).isNotNull();
+      assertThat(sut.getHeroOneId()).isEqualTo(FLASH_ID);
       assertThat(sut.getPowerStatsHeroOne()).isNotNull();
+      assertThat(sut.getHeroTwoId()).isEqualTo(SUPERMAN_ID);
       assertThat(sut.getPowerStatsHeroTwo()).isNotNull();
    }
 
    @Test
-   void compareHeroes_WithSameHeroes_ThrowException() {
-      assertThatThrownBy(() -> heroService.compareHeroes(INVALID_COMPARE))
+   void shouldThrowsException_WhenCompareSameHeroes() {
+      // given
+      CompareHero compareHero = new CompareHero(SUPERMAN_ID, SUPERMAN_ID);
+
+      // then
+      assertThatThrownBy(() -> heroService.compareHeroes(compareHero))
             .hasMessageContaining("Não é possível comparar um herói com ele mesmo")
             .isInstanceOf(NegocioException.class);
    }
 
    @Test
-   void compareHeroes_InvalidHeroes_ThrowException() {
-      assertThatThrownBy(() -> heroService.compareHeroes(new CompareHero(UUID.randomUUID(), UUID.randomUUID())))
+   void shouldThrowsException_WhenCompareUnexistingHeroes() {
+      // given
+      CompareHero compareHero = new CompareHero(UUID.randomUUID(), UUID.randomUUID());
+
+      // then
+      assertThatThrownBy(() -> heroService.compareHeroes(compareHero))
             .isInstanceOf(EntityNotFoundException.class);
    }
 
